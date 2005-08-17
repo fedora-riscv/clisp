@@ -1,7 +1,7 @@
 Name:		clisp
 Summary:	Common Lisp (ANSI CL) implementation
 Version:	2.34
-Release: 	2%{?dist}
+Release: 	3%{?dist}
 
 Group:		Development/Languages
 License:	GPL
@@ -10,7 +10,7 @@ Source:		http://download.sourceforge.net/clisp/clisp-2.34.tar.bz2
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:	readline-devel, XFree86-devel, gettext, pcre-devel, postgresql-devel
 BuildRequires:	libsigsegv-devel, db4-devel, zlib-devel
-
+ExcludeArch:	ppc ppc64
 
 %description
 Common Lisp is a high-level, general-purpose programming language.
@@ -107,6 +107,9 @@ rm -fr $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Aug 17 2005 Gerard Milmeister <gemi@bluewin.ch> - 2.34-3
+- Build fails on ppc, exclude for now
+
 * Wed Aug 17 2005 Gerard Milmeister <gemi@bluewin.ch> - 2.34-2
 - Fix libdir for x86_64
 
