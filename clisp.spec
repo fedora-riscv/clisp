@@ -1,7 +1,7 @@
 Name:		clisp
 Summary:	Common Lisp (ANSI CL) implementation
 Version:	2.34
-Release: 	1%{?dist}
+Release: 	2%{?dist}
 
 Group:		Development/Languages
 License:	GPL
@@ -43,6 +43,7 @@ sed -i -e 's|-Wpointer-arith|-Wpointer-arith -falign-functions=4|' src/makemake.
 sed -i -e 's|^  make check$||' configure
 # setting CFLAGS breaks the build
 ./configure --prefix=%{_prefix} \
+	    --libdir=%{_libdir} \
 	    --fsstnd=redhat \
 	    --with-dynamic-ffi \
 	    --with-module=berkeley-db \
@@ -62,7 +63,7 @@ sed -i -e 's|^  make check$||' configure
 
 %install
 rm -rf $RPM_BUILD_ROOT
-make -C src prefix=%{_prefix} DESTDIR=$RPM_BUILD_ROOT  mandir=%{_mandir} install
+make -C src prefix=%{_prefix} libdir=%{_libdir} DESTDIR=$RPM_BUILD_ROOT  mandir=%{_mandir} install
 rm -f $RPM_BUILD_ROOT%{_docdir}/clisp-%{version}/doc/clisp.{dvi,1,ps}
 cp -p doc/mop-spec.pdf $RPM_BUILD_ROOT%{_docdir}/clisp-%{version}/doc
 %find_lang %{name}
@@ -106,17 +107,8 @@ rm -fr $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Aug 17 2005 Gerard Milmeister <gemi@bluewin.ch> - 2.34-2
+- Fix libdir for x86_64
+
 * Tue Aug 16 2005 Gerard Milmeister <gemi@bluewin.ch> - 2.34-1
 - New Version 2.34
-
-* Sun Apr 10 2005 Gerard Milmeister <gemi@bluewin.ch> - 2.33.2-2
-- Simpler build command
-
-* Fri Feb 18 2005 Gerard Milmeister <gemi@bluewin.ch> - 0:2.33.2-1
-- New Version 2.33.2
-
-* Sat Mar 20 2004 Gerard Milmeister <gemi@bluewin.ch> - 0:2.33-0.fdr.1
-- New Version 2.33
-
-* Tue Oct 21 2003 Gerard Milmeister <gemi@bluewin.ch> - 0:2.31-0.fdr.1
-- First fedora release
