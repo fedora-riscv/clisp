@@ -1,28 +1,38 @@
 Name:		clisp
 Summary:	Common Lisp (ANSI CL) implementation
-Version:	2.34
-Release: 	3%{?dist}
+Version:	2.35
+Release: 	1%{?dist}
 
 Group:		Development/Languages
 License:	GPL
 URL:		http://sourceforge.net/projects/clisp
-Source:		http://download.sourceforge.net/clisp/clisp-2.34.tar.bz2
+Source:		http://download.sourceforge.net/clisp/clisp-2.35.tar.bz2
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:	readline-devel, XFree86-devel, gettext, pcre-devel, postgresql-devel
 BuildRequires:	libsigsegv-devel, db4-devel, zlib-devel
 ExcludeArch:	ppc ppc64
 
-%description
-Common Lisp is a high-level, general-purpose programming language.
-GNU CLISP is a Common Lisp implementation by Bruno Haible of Karlsruhe
-University and Michael Stoll of Munich University, both in Germany.
-It mostly supports the Lisp described in the ANSI Common Lisp
-standard.
 
-GNU CLISP includes an interpreter, a compiler, a debugger, a large
-subset of CLOS, a foreign language interface and a socket interface.
-An X11 interface is available through CLX, Garnet, CLUE/CLIO.  GNU
-CLISP runs Maxima, ACL2 and many other Common Lisp packages.
+%description
+ANSI Common Lisp is a high-level, general-purpose programming
+language.  GNU CLISP is a Common Lisp implementation by Bruno Haible
+of Karlsruhe University and Michael Stoll of Munich University, both
+in Germany.  It mostly supports the Lisp described in the ANSI Common
+Lisp standard.  It runs on most Unix workstations (GNU/Linux, FreeBSD,
+NetBSD, OpenBSD, Solaris, Tru64, HP-UX, BeOS, NeXTstep, IRIX, AIX and
+others) and on other systems (Windows NT/2000/XP, Windows 95/98/ME)
+and needs only 4 MB of RAM.
+
+It is Free Software and may be distributed under the terms of GNU GPL,
+while it is possible to distribute commercial proprietary applications
+compiled with GNU CLISP.
+
+The user interface comes in English, German, French, Spanish, Dutch,
+Russian and Danish, and can be changed at run time.  GNU CLISP
+includes an interpreter, a compiler, a debugger, CLOS, MOP, a foreign
+language interface, sockets, i18n, fast bignums and more.  An X11
+interface is available through CLX, Garnet, CLUE/CLIO.  GNU CLISP runs
+Maxima, ACL2 and many other Common Lisp packages.
 
 
 %package devel
@@ -39,8 +49,6 @@ Files necessary for linking CLISP.
 
 %build
 sed -i -e 's|-Wpointer-arith|-Wpointer-arith -falign-functions=4|' src/makemake.in
-# during test phase something goes wrong during file copying, so disable check
-sed -i -e 's|^  make check$||' configure
 # setting CFLAGS breaks the build
 ./configure --prefix=%{_prefix} \
 	    --libdir=%{_libdir} \
@@ -48,22 +56,19 @@ sed -i -e 's|^  make check$||' configure
 	    --with-dynamic-ffi \
 	    --with-module=berkeley-db \
 	    --with-module=clx/new-clx \
-	    --with-module=i18n \
 	    --with-module=pcre \
 	    --with-module=postgresql \
 	    --with-module=rawsock \
-	    --with-module=regexp \
-	    --with-module=syscalls \
 	    --with-module=wildcard \
 	    --with-module=zlib \
    	    --with-module=bindings/glibc \
 	    --with-readline \
-	    --build
+	    --build build
 
 
 %install
 rm -rf $RPM_BUILD_ROOT
-make -C src prefix=%{_prefix} libdir=%{_libdir} DESTDIR=$RPM_BUILD_ROOT  mandir=%{_mandir} install
+make -C build prefix=%{_prefix} libdir=%{_libdir} mandir=%{_mandir} DESTDIR=$RPM_BUILD_ROOT install
 rm -f $RPM_BUILD_ROOT%{_docdir}/clisp-%{version}/doc/clisp.{dvi,1,ps}
 cp -p doc/mop-spec.pdf $RPM_BUILD_ROOT%{_docdir}/clisp-%{version}/doc
 %find_lang %{name}
@@ -107,6 +112,15 @@ rm -fr $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Aug 30 2005 Gerard Milmeister <gemi@bluewin.ch> - 2.35-1
+- New Version 2.35
+
+* Thu Aug 18 2005 Gerard Milmeister <gemi@bluewin.ch> - 2.34-5
+- do the compilation in the "build" directory
+
+* Thu Aug 18 2005 Gerard Milmeister <gemi@bluewin.ch> - 2.34-4
+- Use ulimit for the build to succeed on ppc
+
 * Wed Aug 17 2005 Gerard Milmeister <gemi@bluewin.ch> - 2.34-3
 - Build fails on ppc, exclude for now
 
