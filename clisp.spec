@@ -1,7 +1,7 @@
 Name:		clisp
 Summary:	Common Lisp (ANSI CL) implementation
 Version:	2.36
-Release: 	2%{?dist}
+Release: 	3%{?dist}
 
 Group:		Development/Languages
 License:	GPL
@@ -10,7 +10,17 @@ Source:		http://download.sourceforge.net/clisp/clisp-2.36.tar.bz2
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:	readline-devel, gettext, pcre-devel, postgresql-devel
 BuildRequires:	libsigsegv-devel, db4-devel, zlib-devel
-BuildRequires:	libSM-devel, libICE-devel, libX11-devel, libXext-devel, libXpm-devel
+BuildRequires:  libICE-devel
+BuildRequires:  libSM-devel
+BuildRequires:  libX11-devel
+BuildRequires:  libXaw-devel
+BuildRequires:  libXext-devel
+BuildRequires:  libXft-devel
+BuildRequires:  libXmu-devel
+BuildRequires:  libXrender-devel
+BuildRequires:  libXt-devel
+BuildRequires:  mesa-libGL-devel
+BuildRequires:  mesa-libGLU-devel
 #ExcludeArch:	ppc ppc64
 
 
