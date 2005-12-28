@@ -1,7 +1,7 @@
 Name:		clisp
 Summary:	Common Lisp (ANSI CL) implementation
 Version:	2.36
-Release: 	3%{?dist}
+Release: 	4%{?dist}
 
 Group:		Development/Languages
 License:	GPL
@@ -19,8 +19,7 @@ BuildRequires:  libXft-devel
 BuildRequires:  libXmu-devel
 BuildRequires:  libXrender-devel
 BuildRequires:  libXt-devel
-BuildRequires:  mesa-libGL-devel
-BuildRequires:  mesa-libGLU-devel
+BuildRequires:	imake
 #ExcludeArch:	ppc ppc64
 
 
