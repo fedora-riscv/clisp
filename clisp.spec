@@ -1,7 +1,7 @@
 Name:		clisp
 Summary:	Common Lisp (ANSI CL) implementation
-Version:	2.36
-Release: 	7%{?dist}
+Version:	2.37
+Release: 	2%{?dist}
 
 Group:		Development/Languages
 License:	GPL
@@ -20,7 +20,7 @@ BuildRequires:  libXmu-devel
 BuildRequires:  libXrender-devel
 BuildRequires:  libXt-devel
 BuildRequires:	imake
-ExcludeArch:	x86_64 ppc ppc64
+ExcludeArch:	ppc ppc64
 
 
 %description
@@ -122,6 +122,9 @@ rm -fr $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Jan  3 2006 Gerard Milmeister <gemi@bluewin.ch> - 2.37-1
+- new version 2.37
+
 * Wed Dec 28 2005 Gerard Milmeister <gemi@bluewin.ch> - 2.36-1
 - New Version 2.36
 
