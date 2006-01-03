@@ -1,12 +1,12 @@
 Name:		clisp
 Summary:	Common Lisp (ANSI CL) implementation
 Version:	2.37
-Release: 	2%{?dist}
+Release: 	3%{?dist}
 
 Group:		Development/Languages
 License:	GPL
 URL:		http://sourceforge.net/projects/clisp
-Source:		http://download.sourceforge.net/clisp/clisp-2.36.tar.bz2
+Source:		http://download.sourceforge.net/clisp/clisp-2.37.tar.bz2
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:	readline-devel, gettext, pcre-devel, postgresql-devel
 BuildRequires:	libsigsegv-devel, db4-devel, zlib-devel
