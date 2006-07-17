@@ -1,12 +1,12 @@
 Name:		clisp
 Summary:	Common Lisp (ANSI CL) implementation
-Version:	2.38
-Release: 	2%{?dist}
+Version:	2.39
+Release: 	1%{?dist}
 
 Group:		Development/Languages
 License:	GPL
 URL:		http://sourceforge.net/projects/clisp
-Source:		http://download.sourceforge.net/clisp/clisp-2.38.tar.bz2
+Source:		http://download.sourceforge.net/clisp/clisp-2.39.tar.bz2
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:	readline-devel, gettext, pcre-devel, postgresql-devel
 BuildRequires:	libsigsegv-devel, db4-devel, zlib-devel
@@ -79,7 +79,14 @@ sed -i -e 's|-Wpointer-arith|-Wpointer-arith -falign-functions=4|' src/makemake.
 
 %install
 rm -rf $RPM_BUILD_ROOT
-make -C build prefix=%{_prefix} libdir=%{_libdir} mandir=%{_mandir} DESTDIR=$RPM_BUILD_ROOT install
+make -C \
+	build \
+	prefix=%{_prefix} \
+	libdir=%{_libdir} \
+	mandir=%{_mandir} \
+	docdir=%{_docdir}/clisp-%{version} \
+	DESTDIR=$RPM_BUILD_ROOT \
+	install
 rm -f $RPM_BUILD_ROOT%{_docdir}/clisp-%{version}/doc/clisp.{dvi,1,ps}
 cp -p doc/mop-spec.pdf $RPM_BUILD_ROOT%{_docdir}/clisp-%{version}/doc
 %find_lang %{name}
@@ -123,6 +130,9 @@ rm -fr $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Jul 17 2006 Gerard Milmeister <gemi@bluewin.ch> - 2.39-1
+- new version 2.39
+
 * Fri Feb 17 2006 Gerard Milmeister <gemi@bluewin.ch> - 2.38-2
 - Rebuild for Fedora Extras 5
 
