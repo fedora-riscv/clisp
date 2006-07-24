@@ -1,7 +1,7 @@
 Name:		clisp
 Summary:	Common Lisp (ANSI CL) implementation
 Version:	2.39
-Release: 	1%{?dist}
+Release: 	2%{?dist}
 
 Group:		Development/Languages
 License:	GPL
@@ -60,8 +60,7 @@ Files necessary for linking CLISP.
 
 %build
 sed -i -e 's|-Wpointer-arith|-Wpointer-arith -falign-functions=4|' src/makemake.in
-# setting CFLAGS breaks the build
-./configure --prefix=%{_prefix} \
+CFLAGS="" ./configure --prefix=%{_prefix} \
 	    --libdir=%{_libdir} \
 	    --fsstnd=redhat \
 	    --with-dynamic-ffi \
@@ -130,6 +129,10 @@ rm -fr $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Jul 24 2006 Gerard Milmeister <gemi@bluewin.ch> - 2.39-2
+- rebuild with updated libsigsegv
+- set CFLAGS to ""
+
 * Mon Jul 17 2006 Gerard Milmeister <gemi@bluewin.ch> - 2.39-1
 - new version 2.39
 
