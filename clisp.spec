@@ -1,11 +1,11 @@
 Name:		clisp
 Summary:	Common Lisp (ANSI CL) implementation
 Version:	2.39
-Release: 	2%{?dist}
+Release: 	3%{?dist}
 
 Group:		Development/Languages
 License:	GPL
-URL:		http://sourceforge.net/projects/clisp
+URL:		http://clisp.cons.org
 Source:		http://download.sourceforge.net/clisp/clisp-2.39.tar.bz2
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:	readline-devel, gettext, pcre-devel, postgresql-devel
@@ -59,7 +59,6 @@ Files necessary for linking CLISP.
 
 
 %build
-sed -i -e 's|-Wpointer-arith|-Wpointer-arith -falign-functions=4|' src/makemake.in
 CFLAGS="" ./configure --prefix=%{_prefix} \
 	    --libdir=%{_libdir} \
 	    --fsstnd=redhat \
@@ -129,6 +128,9 @@ rm -fr $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Jul 28 2006 Gerard Milmeister <gemi@bluewin.ch> - 2.39-3
+- changed url to canonical web page
+
 * Mon Jul 24 2006 Gerard Milmeister <gemi@bluewin.ch> - 2.39-2
 - rebuild with updated libsigsegv
 - set CFLAGS to ""
