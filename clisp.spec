@@ -1,7 +1,7 @@
 Name:		clisp
 Summary:	Common Lisp (ANSI CL) implementation
 Version:	2.39
-Release: 	3%{?dist}
+Release: 	4%{?dist}
 
 Group:		Development/Languages
 License:	GPL
@@ -128,6 +128,9 @@ rm -fr $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Aug 28 2006 Gerard Milmeister <gemi@bluewin.ch> - 2.39-4
+- Rebuild for FE6
+
 * Fri Jul 28 2006 Gerard Milmeister <gemi@bluewin.ch> - 2.39-3
 - changed url to canonical web page
 
