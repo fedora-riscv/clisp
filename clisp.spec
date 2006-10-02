@@ -1,12 +1,12 @@
 Name:		clisp
 Summary:	Common Lisp (ANSI CL) implementation
-Version:	2.39
-Release: 	4%{?dist}
+Version:	2.40
+Release: 	1%{?dist}
 
 Group:		Development/Languages
 License:	GPL
 URL:		http://clisp.cons.org
-Source:		http://download.sourceforge.net/clisp/clisp-2.39.tar.bz2
+Source:		http://download.sourceforge.net/clisp/clisp-2.40.tar.bz2
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:	readline-devel, gettext, pcre-devel, postgresql-devel
 BuildRequires:	libsigsegv-devel, db4-devel, zlib-devel
@@ -105,6 +105,7 @@ cat %{name}low.lang >> %{name}.lang
 %{_libdir}/clisp/full/lispinit.mem
 %{_libdir}/clisp/full/lisp.run
 %{_libdir}/clisp/data
+%{_datadir}/emacs/site-lisp/*
 
 
 %files devel
@@ -128,6 +129,9 @@ rm -fr $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Oct  2 2006 Gerard Milmeister <gemi@bluewin.ch> - 2.40-1
+- new version 2.40
+
 * Mon Aug 28 2006 Gerard Milmeister <gemi@bluewin.ch> - 2.39-4
 - Rebuild for FE6
 
