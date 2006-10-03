@@ -1,12 +1,13 @@
 Name:		clisp
 Summary:	Common Lisp (ANSI CL) implementation
 Version:	2.40
-Release: 	2%{?dist}
+Release: 	3%{?dist}
 
 Group:		Development/Languages
 License:	GPL
 URL:		http://clisp.cons.org
 Source:		http://download.sourceforge.net/clisp/clisp-2.40.tar.bz2
+Patch0:		clisp-2.40-doc.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:	readline-devel, gettext, pcre-devel, postgresql-devel
 BuildRequires:	libsigsegv-devel, db4-devel, zlib-devel
@@ -20,8 +21,7 @@ BuildRequires:  libXmu-devel
 BuildRequires:  libXrender-devel
 BuildRequires:  libXt-devel
 BuildRequires:	imake
-#ExcludeArch:	ppc ppc64
-ExcludeArch:	x86_64
+ExcludeArch:	ppc ppc64
 
 
 %description
@@ -57,6 +57,8 @@ Files necessary for linking CLISP.
 
 %prep
 %setup -q
+cd src
+%patch0
 
 
 %build
@@ -130,6 +132,9 @@ rm -fr $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Oct  3 2006 Gerard Milmeister <gemi@bluewin.ch> - 2.40-3
+- Added patch for x86_64
+
 * Mon Oct  2 2006 Gerard Milmeister <gemi@bluewin.ch> - 2.40-1
 - new version 2.40
 
