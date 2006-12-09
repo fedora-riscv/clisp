@@ -1,15 +1,21 @@
 Name:		clisp
 Summary:	Common Lisp (ANSI CL) implementation
 Version:	2.41
-Release: 	2%{?dist}
+Release: 	3%{?dist}
 
 Group:		Development/Languages
 License:	GPL
 URL:		http://clisp.cons.org
 Source:		http://download.sourceforge.net/clisp/clisp-2.41.tar.bz2
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildRequires:	readline-devel, gettext, pcre-devel, postgresql-devel
-BuildRequires:	libsigsegv-devel, db4-devel, zlib-devel
+BuildRequires:	readline-devel
+BuildRequires:  gettext
+BuildRequires:  pcre-devel
+BuildRequires:  postgresql-devel
+BuildRequires:	libsigsegv-devel
+# no berkeley db until fixed for new version
+#BuildRequires:  db4-devel
+BuildRequires:  zlib-devel
 BuildRequires:  libICE-devel
 BuildRequires:  libSM-devel
 BuildRequires:  libX11-devel
@@ -56,14 +62,17 @@ Files necessary for linking CLISP.
 
 %prep
 %setup -q
+# enforced stack size seems to be too small
+sed -i "s|ulimit -s 8192|ulimit -s unlimited|" configure
 
 
 %build
+# no berkeley db until fixed for new version
+# 	    --with-module=berkeley-db
 CFLAGS="" ./configure --prefix=%{_prefix} \
 	    --libdir=%{_libdir} \
 	    --fsstnd=redhat \
 	    --with-dynamic-ffi \
-	    --with-module=berkeley-db \
 	    --with-module=clx/new-clx \
 	    --with-module=pcre \
 	    --with-module=postgresql \
@@ -129,6 +138,9 @@ rm -fr $RPM_BUILD_ROOT
 
 
 %changelog
+* Sat Dec  9 2006 Gerard Milmeister <gemi@bluewin.ch> - 2.41-3
+- rebuild without berkeley-db for now
+
 * Fri Oct 13 2006 Gerard Milmeister <gemi@bluewin.ch> - 2.41-1
 - new version 2.41
 
