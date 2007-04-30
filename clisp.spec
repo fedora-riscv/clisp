@@ -1,12 +1,13 @@
 Name:		clisp
 Summary:	Common Lisp (ANSI CL) implementation
 Version:	2.41
-Release: 	3%{?dist}
+Release: 	4%{?dist}
 
 Group:		Development/Languages
 License:	GPL
 URL:		http://clisp.cons.org
 Source:		http://download.sourceforge.net/clisp/clisp-2.41.tar.bz2
+Patch:		clisp-config-stacksize.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:	readline-devel
 BuildRequires:  gettext
@@ -26,7 +27,6 @@ BuildRequires:  libXmu-devel
 BuildRequires:  libXrender-devel
 BuildRequires:  libXt-devel
 BuildRequires:	imake
-ExcludeArch:	ppc ppc64
 
 
 %description
@@ -37,7 +37,7 @@ in Germany.  It mostly supports the Lisp described in the ANSI Common
 Lisp standard.  It runs on most Unix workstations (GNU/Linux, FreeBSD,
 NetBSD, OpenBSD, Solaris, Tru64, HP-UX, BeOS, NeXTstep, IRIX, AIX and
 others) and on other systems (Windows NT/2000/XP, Windows 95/98/ME)
-and needs only 4 MB of RAM.
+and needs only 4 MiB of RAM.
 
 It is Free Software and may be distributed under the terms of GNU GPL,
 while it is possible to distribute commercial proprietary applications
@@ -62,6 +62,7 @@ Files necessary for linking CLISP.
 
 %prep
 %setup -q
+%patch -p0
 # enforced stack size seems to be too small
 sed -i "s|ulimit -s 8192|ulimit -s unlimited|" configure
 
@@ -138,6 +139,9 @@ rm -fr $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Apr 30 2007 David Woodhouse <dwmw2@infradead.org> - 2.41-4
+- Fix stack size in configure, restore ppc build
+
 * Sat Dec  9 2006 Gerard Milmeister <gemi@bluewin.ch> - 2.41-3
 - rebuild without berkeley-db for now
 
