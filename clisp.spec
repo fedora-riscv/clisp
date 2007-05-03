@@ -64,7 +64,7 @@ Files necessary for linking CLISP.
 %setup -q
 %patch -p0
 # enforced stack size seems to be too small
-sed -i "s|ulimit -s 8192|ulimit -s unlimited|" configure
+sed -i "s|STACK_LIMIT=16384|STACK_LIMIT=unlimited|" configure
 
 
 %build
