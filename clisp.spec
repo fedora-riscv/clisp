@@ -1,7 +1,7 @@
 Name:		clisp
 Summary:	Common Lisp (ANSI CL) implementation
 Version:	2.41
-Release: 	4%{?dist}
+Release: 	5%{?dist}
 
 Group:		Development/Languages
 License:	GPL
@@ -27,7 +27,7 @@ BuildRequires:  libXmu-devel
 BuildRequires:  libXrender-devel
 BuildRequires:  libXt-devel
 BuildRequires:	imake
-
+ExcludeArch: ppc64
 
 %description
 ANSI Common Lisp is a high-level, general-purpose programming
@@ -139,6 +139,9 @@ rm -fr $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon May  3 2007 David Woodhouse <dwmw2@infradead.org> - 2.41-5
+- Exclude ppc64 for now
+
 * Mon Apr 30 2007 David Woodhouse <dwmw2@infradead.org> - 2.41-4
 - Fix stack size in configure, restore ppc build
 
