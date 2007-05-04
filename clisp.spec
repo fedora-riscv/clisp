@@ -1,13 +1,12 @@
 Name:		clisp
 Summary:	Common Lisp (ANSI CL) implementation
 Version:	2.41
-Release: 	5%{?dist}
+Release: 	6%{?dist}
 
 Group:		Development/Languages
 License:	GPL
 URL:		http://clisp.cons.org
 Source:		http://download.sourceforge.net/clisp/clisp-2.41.tar.bz2
-Patch:		clisp-config-stacksize.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:	readline-devel
 BuildRequires:  gettext
@@ -27,7 +26,8 @@ BuildRequires:  libXmu-devel
 BuildRequires:  libXrender-devel
 BuildRequires:  libXt-devel
 BuildRequires:	imake
-ExcludeArch: ppc64
+ExcludeArch:	ppc64
+
 
 %description
 ANSI Common Lisp is a high-level, general-purpose programming
@@ -62,9 +62,8 @@ Files necessary for linking CLISP.
 
 %prep
 %setup -q
-%patch -p0
 # enforced stack size seems to be too small
-sed -i "s|STACK_LIMIT=16384|STACK_LIMIT=unlimited|" configure
+sed -i "s|ulimit -s 8192|ulimit -s unlimited|" configure
 
 
 %build
@@ -139,7 +138,10 @@ rm -fr $RPM_BUILD_ROOT
 
 
 %changelog
-* Mon May  3 2007 David Woodhouse <dwmw2@infradead.org> - 2.41-5
+* Fri May  4 2007 David Woodhouse <dwmw2@infradead.org> - 2.41-6
+- Revert to overriding stack limit in specfile
+
+* Thu May  3 2007 David Woodhouse <dwmw2@infradead.org> - 2.41-5
 - Exclude ppc64 for now
 
 * Mon Apr 30 2007 David Woodhouse <dwmw2@infradead.org> - 2.41-4
