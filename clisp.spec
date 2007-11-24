@@ -1,7 +1,7 @@
 Name:		clisp
 Summary:	Common Lisp (ANSI CL) implementation
 Version:	2.43
-Release: 	1%{?dist}
+Release: 	2%{?dist}
 
 Group:		Development/Languages
 License:	GPLv2
@@ -67,7 +67,7 @@ Files necessary for linking CLISP.
 %prep
 %setup -q
 # enforced stack size seems to be too small
-sed -i "s|ulimit -s 8192|ulimit -s unlimited|" configure
+sed -i "s|STACK_LIMIT=.*|STACK_LIMIT=unlimited|" configure
 
 
 %build
