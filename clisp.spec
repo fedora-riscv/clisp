@@ -1,21 +1,21 @@
 Name:		clisp
 Summary:	Common Lisp (ANSI CL) implementation
-Version:	2.41
-Release: 	6%{?dist}
+Version:	2.43
+Release: 	1%{?dist}
 
 Group:		Development/Languages
-License:	GPL
+License:	GPLv2
 URL:		http://clisp.cons.org
-Source:		http://download.sourceforge.net/clisp/clisp-2.41.tar.bz2
+Source:		http://download.sourceforge.net/clisp/clisp-2.43.tar.bz2
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildRequires:	readline-devel
-BuildRequires:  gettext
-BuildRequires:  pcre-devel
-BuildRequires:  postgresql-devel
+BuildRequires:  diffutils
+BuildRequires:	imake
 BuildRequires:	libsigsegv-devel
-# no berkeley db until fixed for new version
-#BuildRequires:  db4-devel
-BuildRequires:  zlib-devel
+BuildRequires:	readline-devel
+BuildRequires:  gdbm-devel
+BuildRequires:  gettext
+BuildRequires:  gtk2-devel
+BuildRequires:  libglade2-devel
 BuildRequires:  libICE-devel
 BuildRequires:  libSM-devel
 BuildRequires:  libX11-devel
@@ -25,7 +25,11 @@ BuildRequires:  libXft-devel
 BuildRequires:  libXmu-devel
 BuildRequires:  libXrender-devel
 BuildRequires:  libXt-devel
-BuildRequires:	imake
+BuildRequires:  pcre-devel
+BuildRequires:  postgresql-devel
+BuildRequires:  zlib-devel
+# no berkeley db until fixed for new version
+#BuildRequires:  db4-devel
 ExcludeArch:	ppc64
 
 
@@ -69,19 +73,22 @@ sed -i "s|ulimit -s 8192|ulimit -s unlimited|" configure
 %build
 # no berkeley db until fixed for new version
 # 	    --with-module=berkeley-db
-CFLAGS="" ./configure --prefix=%{_prefix} \
-	    --libdir=%{_libdir} \
-	    --fsstnd=redhat \
-	    --with-dynamic-ffi \
-	    --with-module=clx/new-clx \
-	    --with-module=pcre \
-	    --with-module=postgresql \
-	    --with-module=rawsock \
-	    --with-module=wildcard \
-	    --with-module=zlib \
-   	    --with-module=bindings/glibc \
+./configure --prefix=%{_prefix} \
+            --libdir=%{_libdir} \
+            --fsstnd=redhat \
+            --with-dynamic-ffi \
+            --with-module=bindings/glibc \
+            --with-module=clx/new-clx \
+            --with-module=gdbm \
+            --with-module=gtk2 \
+            --with-module=pcre \
+            --with-module=postgresql \
+            --with-module=rawsock \
+            --with-module=wildcard \
+            --with-module=zlib \
 	    --with-readline \
-	    --build build
+	    --build build \
+	    CFLAGS="$RPM_OPT_FLAGS"
 
 
 %install
@@ -106,31 +113,32 @@ cat %{name}low.lang >> %{name}.lang
 %{_bindir}/clisp
 %{_mandir}/man1/*
 %{_docdir}/clisp-%{version}
-%dir %{_libdir}/clisp/base
-%dir %{_libdir}/clisp/full
-%dir %{_libdir}/clisp
-%{_libdir}/clisp/base/lispinit.mem
-%{_libdir}/clisp/base/lisp.run
-%{_libdir}/clisp/full/lispinit.mem
-%{_libdir}/clisp/full/lisp.run
-%{_libdir}/clisp/data
+%dir %{_libdir}/clisp-*/base
+%dir %{_libdir}/clisp-*/full
+%dir %{_libdir}/clisp-*
+%{_libdir}/clisp-*/base/lispinit.mem
+%{_libdir}/clisp-*/base/lisp.run
+%{_libdir}/clisp-*/full/lispinit.mem
+%{_libdir}/clisp-*/full/lisp.run
+%{_libdir}/clisp-*/data
 %{_datadir}/emacs/site-lisp/*
+%{_datadir}/vim/vimfiles/after/syntax/*
 
 
 %files devel
 %defattr(-,root,root,-)
-%attr(0755,root,root) %{_libdir}/clisp/clisp-link
-%{_libdir}/clisp/base/*.a
-%{_libdir}/clisp/base/*.o
-%{_libdir}/clisp/base/*.h
-%{_libdir}/clisp/base/*.dvi
-%{_libdir}/clisp/base/makevars
-%{_libdir}/clisp/full/*.a
-%{_libdir}/clisp/full/*.o
-%{_libdir}/clisp/full/*.h
-%{_libdir}/clisp/full/*.dvi
-%{_libdir}/clisp/full/makevars
-%{_libdir}/clisp/linkkit
+%attr(0755,root,root) %{_libdir}/clisp-*/clisp-link
+%{_libdir}/clisp-*/base/*.a
+%{_libdir}/clisp-*/base/*.o
+%{_libdir}/clisp-*/base/*.h
+%{_libdir}/clisp-*/base/*.dvi
+%{_libdir}/clisp-*/base/makevars
+%{_libdir}/clisp-*/full/*.a
+%{_libdir}/clisp-*/full/*.o
+%{_libdir}/clisp-*/full/*.h
+%{_libdir}/clisp-*/full/*.dvi
+%{_libdir}/clisp-*/full/makevars
+%{_libdir}/clisp-*/linkkit
 
 
 %clean
@@ -138,6 +146,12 @@ rm -fr $RPM_BUILD_ROOT
 
 
 %changelog
+* Sat Nov 24 2007 Gerard Milmeister <gemi@bluewin.ch> - 2.43-1
+- new release 2.43
+
+* Tue Oct 16 2007 Gerard Milmeister <gemi@bluewin.ch> - 2.42-1
+- new release 2.42
+
 * Fri May  4 2007 David Woodhouse <dwmw2@infradead.org> - 2.41-6
 - Revert to overriding stack limit in specfile
 
