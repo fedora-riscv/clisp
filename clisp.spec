@@ -1,7 +1,7 @@
 Name:		clisp
 Summary:	Common Lisp (ANSI CL) implementation
 Version:	2.43
-Release: 	4%{?dist}
+Release: 	5%{?dist}
 
 Group:		Development/Languages
 License:	GPLv2
@@ -68,6 +68,8 @@ Files necessary for linking CLISP.
 %setup -q
 # enforced stack size seems to be too small
 sed -i "s|STACK_LIMIT=.*|STACK_LIMIT=unlimited|" configure
+sed -i "s|-fexpensive-optimizations||" src/makemake.in
+sed -i "s|-O2|-O0|" src/makemake.in
 
 
 %build
@@ -87,8 +89,7 @@ sed -i "s|STACK_LIMIT=.*|STACK_LIMIT=unlimited|" configure
             --with-module=wildcard \
             --with-module=zlib \
 	    --with-readline \
-	    --build build \
-	    CFLAGS="$RPM_OPT_FLAGS"
+	    --build build # CFLAGS="$RPM_OPT_FLAGS"
 
 
 %install
@@ -146,6 +147,9 @@ rm -fr $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Feb 22 2008 Gerard Milmeister <gemi@bluewin.ch> - 2.43-5
+- Compile with -O0 to avoid GCC 4.3 miscompilation
+
 * Mon Feb 18 2008 Fedora Release Engineering <rel-eng@fedoraproject.org> - 2.43-4
 - Autorebuild for GCC 4.3
 
