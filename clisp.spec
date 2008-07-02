@@ -1,6 +1,6 @@
 Name:		clisp
 Summary:	Common Lisp (ANSI CL) implementation
-Version:	2.45
+Version:	2.46
 Release: 	1%{?dist}
 
 Group:		Development/Languages
@@ -142,6 +142,9 @@ rm -fr $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Jul  2 2008 Gerard Milmeister <gemi@bluewin.ch> - 2.46-1
+- new release 2.46
+
 * Fri Apr 18 2008 Gerard Milmeister <gemi@bluewin.ch> - 2.44.1-1
 - new release 2.44.1
 
