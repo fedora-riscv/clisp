@@ -1,21 +1,21 @@
 Name:		clisp
 Summary:	Common Lisp (ANSI CL) implementation
-Version:	2.43
-Release: 	5%{?dist}
+Version:	2.46
+Release: 	1%{?dist}
 
 Group:		Development/Languages
 License:	GPLv2
 URL:		http://clisp.cons.org
-Source:		http://download.sourceforge.net/clisp/clisp-2.43.tar.bz2
+Source:		http://download.sourceforge.net/clisp/clisp-%{version}.tar.bz2
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildRequires:  diffutils
 BuildRequires:	imake
 BuildRequires:	libsigsegv-devel
 BuildRequires:	readline-devel
+BuildRequires:  diffutils
+BuildRequires:  ffcall
 BuildRequires:  gdbm-devel
 BuildRequires:  gettext
 BuildRequires:  gtk2-devel
-BuildRequires:  libglade2-devel
 BuildRequires:  libICE-devel
 BuildRequires:  libSM-devel
 BuildRequires:  libX11-devel
@@ -25,11 +25,13 @@ BuildRequires:  libXft-devel
 BuildRequires:  libXmu-devel
 BuildRequires:  libXrender-devel
 BuildRequires:  libXt-devel
+BuildRequires:  libglade2-devel
 BuildRequires:  pcre-devel
 BuildRequires:  postgresql-devel
 BuildRequires:  zlib-devel
-# no berkeley db until fixed for new version
-#BuildRequires:  db4-devel
+BuildRequires:  db4-devel
+#BuildRequires:  pari-devel
+
 ExcludeArch:	ppc64
 
 
@@ -66,19 +68,21 @@ Files necessary for linking CLISP.
 
 %prep
 %setup -q
-# enforced stack size seems to be too small
-sed -i "s|STACK_LIMIT=.*|STACK_LIMIT=unlimited|" configure
-sed -i "s|-fexpensive-optimizations||" src/makemake.in
-sed -i "s|-O2|-O0|" src/makemake.in
 
 
 %build
-# no berkeley db until fixed for new version
-# 	    --with-module=berkeley-db
+%ifarch ppc ppc64
+%define opt_flags "$RPM_OPT_FLAGS -DNO_GENERATIONAL_GC"
+ulimit -s unlimited
+%else
+%define opt_flags "$RPM_OPT_FLAGS"
+%endif
+
 ./configure --prefix=%{_prefix} \
             --libdir=%{_libdir} \
+	        --mandir=%{_mandir} \
+	        --docdir=%{_docdir}/clisp-%{version} \
             --fsstnd=redhat \
-            --with-dynamic-ffi \
             --with-module=bindings/glibc \
             --with-module=clx/new-clx \
             --with-module=gdbm \
@@ -88,20 +92,14 @@ sed -i "s|-O2|-O0|" src/makemake.in
             --with-module=rawsock \
             --with-module=wildcard \
             --with-module=zlib \
-	    --with-readline \
-	    --build build # CFLAGS="$RPM_OPT_FLAGS"
-
+	        --with-module=berkeley-db \
+	        --with-readline \
+            --cbc \
+	        build CFLAGS=%opt_flags
 
 %install
 rm -rf $RPM_BUILD_ROOT
-make -C \
-	build \
-	prefix=%{_prefix} \
-	libdir=%{_libdir} \
-	mandir=%{_mandir} \
-	docdir=%{_docdir}/clisp-%{version} \
-	DESTDIR=$RPM_BUILD_ROOT \
-	install
+make -C build DESTDIR=$RPM_BUILD_ROOT install
 rm -f $RPM_BUILD_ROOT%{_docdir}/clisp-%{version}/doc/clisp.{dvi,1,ps}
 cp -p doc/mop-spec.pdf $RPM_BUILD_ROOT%{_docdir}/clisp-%{version}/doc
 %find_lang %{name}
@@ -147,6 +145,12 @@ rm -fr $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Jul  2 2008 Gerard Milmeister <gemi@bluewin.ch> - 2.46-1
+- new release 2.46
+
+* Fri Apr 18 2008 Gerard Milmeister <gemi@bluewin.ch> - 2.44.1-1
+- new release 2.44.1
+
 * Fri Feb 22 2008 Gerard Milmeister <gemi@bluewin.ch> - 2.43-5
 - Compile with -O0 to avoid GCC 4.3 miscompilation
 
