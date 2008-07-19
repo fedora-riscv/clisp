@@ -72,7 +72,7 @@ Files necessary for linking CLISP.
 
 %build
 %ifarch ppc ppc64
-%define opt_flags "$RPM_OPT_FLAGS -DNO_GENERATIONAL_GC"
+%define opt_flags "$RPM_OPT_FLAGS -DNO_GENERATIONAL_GC -DNO_MULTIMAP_FILE -DNO_SINGLEMAP"
 ulimit -s unlimited
 %else
 %define opt_flags "$RPM_OPT_FLAGS"
@@ -80,8 +80,8 @@ ulimit -s unlimited
 
 ./configure --prefix=%{_prefix} \
             --libdir=%{_libdir} \
-	        --mandir=%{_mandir} \
-	        --docdir=%{_docdir}/clisp-%{version} \
+            --mandir=%{_mandir} \
+            --docdir=%{_docdir}/clisp-%{version} \
             --fsstnd=redhat \
             --with-module=bindings/glibc \
             --with-module=clx/new-clx \
@@ -92,10 +92,15 @@ ulimit -s unlimited
             --with-module=rawsock \
             --with-module=wildcard \
             --with-module=zlib \
-	        --with-module=berkeley-db \
-	        --with-readline \
-            --cbc \
-	        build CFLAGS=%opt_flags
+            --with-module=berkeley-db \
+            --with-readline \
+            build CFLAGS=%opt_flags
+
+%ifarch ppc ppc64
+ulimit -s unlimited
+%endif
+make -C build
+
 
 %install
 rm -rf $RPM_BUILD_ROOT
