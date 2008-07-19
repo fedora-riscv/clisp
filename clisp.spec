@@ -1,7 +1,7 @@
 Name:		clisp
 Summary:	Common Lisp (ANSI CL) implementation
 Version:	2.46
-Release: 	1%{?dist}
+Release: 	2%{?dist}
 
 Group:		Development/Languages
 License:	GPLv2
@@ -29,7 +29,7 @@ BuildRequires:  libglade2-devel
 BuildRequires:  pcre-devel
 BuildRequires:  postgresql-devel
 BuildRequires:  zlib-devel
-BuildRequires:  db4-devel
+#BuildRequires:  db4-devel
 #BuildRequires:  pari-devel
 
 ExcludeArch:	ppc64
@@ -92,7 +92,6 @@ ulimit -s unlimited
             --with-module=rawsock \
             --with-module=wildcard \
             --with-module=zlib \
-            --with-module=berkeley-db \
             --with-readline \
             build CFLAGS=%opt_flags
 
