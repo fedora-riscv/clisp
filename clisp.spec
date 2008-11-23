@@ -1,6 +1,6 @@
 Name:		clisp
 Summary:	Common Lisp (ANSI CL) implementation
-Version:	2.46
+Version:	2.47
 Release: 	1%{?dist}
 
 Group:		Development/Languages
@@ -11,7 +11,9 @@ BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:	imake
 BuildRequires:	libsigsegv-devel
 BuildRequires:	readline-devel
+BuildRequires:  dbus-devel
 BuildRequires:  diffutils
+BuildRequires:  fcgi-devel
 BuildRequires:  ffcall
 BuildRequires:  gdbm-devel
 BuildRequires:  gettext
@@ -68,37 +70,52 @@ Files necessary for linking CLISP.
 
 %prep
 %setup -q
-# enforced stack size seems to be too small
-sed -i "s|STACK_LIMIT=.*|STACK_LIMIT=unlimited|" configure
-sed -i "s|-fexpensive-optimizations||" src/makemake.in
-#sed -i "s|-O2|-O0|" src/makemake.in
+sed -i 's|http://www.lisp.org/HyperSpec/|http://www.lispworks.com/documentation/HyperSpec/|g' \
+    doc/* src/*.d src/*.lisp
 
 
 %build
+%ifarch ppc ppc64
+%define opt_flags "$RPM_OPT_FLAGS -DNO_GENERATIONAL_GC"
+ulimit -s unlimited
+%else
+%define opt_flags "$RPM_OPT_FLAGS"
+%endif
+
 ./configure --prefix=%{_prefix} \
             --libdir=%{_libdir} \
-	    --mandir=%{_mandir} \
-	    --docdir=%{_docdir}/clisp-%{version} \
+            --mandir=%{_mandir} \
+            --docdir=%{_docdir}/clisp-%{version} \
             --fsstnd=redhat \
+            --hyperspec=http://www.lispworks.com/documentation/HyperSpec/ \
+            --with-module=berkeley-db \
             --with-module=bindings/glibc \
             --with-module=clx/new-clx \
+            --with-module=dbus \
+            --with-module=fastcgi \
             --with-module=gdbm \
             --with-module=gtk2 \
+            --with-module=i18n \
             --with-module=pcre \
             --with-module=postgresql \
             --with-module=rawsock \
+            --with-module=regexp \
+            --with-module=syscalls \
             --with-module=wildcard \
             --with-module=zlib \
-	    --with-module=berkeley-db \
-	    --with-readline \
-	    build # CFLAGS="$RPM_OPT_FLAGS"
-make -C build
+            --with-readline \
+            --cbc \
+            build CFLAGS=%opt_flags
 
 %install
 rm -rf $RPM_BUILD_ROOT
 make -C build DESTDIR=$RPM_BUILD_ROOT install
 rm -f $RPM_BUILD_ROOT%{_docdir}/clisp-%{version}/doc/clisp.{dvi,1,ps}
 cp -p doc/mop-spec.pdf $RPM_BUILD_ROOT%{_docdir}/clisp-%{version}/doc
+cp -p doc/*.png $RPM_BUILD_ROOT%{_docdir}/clisp-%{version}/doc
+cp -p doc/Why-CLISP* $RPM_BUILD_ROOT%{_docdir}/clisp-%{version}/doc
+cp -p doc/regexp.html $RPM_BUILD_ROOT%{_docdir}/clisp-%{version}/doc
+find $RPM_BUILD_ROOT%{_libdir} -name '*.dvi' | xargs rm -f
 %find_lang %{name}
 %find_lang %{name}low
 cat %{name}low.lang >> %{name}.lang
@@ -127,12 +144,10 @@ cat %{name}low.lang >> %{name}.lang
 %{_libdir}/clisp-*/base/*.a
 %{_libdir}/clisp-*/base/*.o
 %{_libdir}/clisp-*/base/*.h
-%{_libdir}/clisp-*/base/*.dvi
 %{_libdir}/clisp-*/base/makevars
 %{_libdir}/clisp-*/full/*.a
 %{_libdir}/clisp-*/full/*.o
 %{_libdir}/clisp-*/full/*.h
-%{_libdir}/clisp-*/full/*.dvi
 %{_libdir}/clisp-*/full/makevars
 %{_libdir}/clisp-*/linkkit
 
@@ -142,6 +157,9 @@ rm -fr $RPM_BUILD_ROOT
 
 
 %changelog
+* Sat Nov 22 2008 Gerard Milmeister <gemi@bluewin.ch> - 2.47-1
+- new release 2.47
+
 * Wed Jul  2 2008 Gerard Milmeister <gemi@bluewin.ch> - 2.46-1
 - new release 2.46
 
