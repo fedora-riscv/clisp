@@ -7,6 +7,7 @@ Group:		Development/Languages
 License:	GPLv2
 URL:		http://clisp.cons.org
 Source:		http://download.sourceforge.net/clisp/clisp-%{version}.tar.bz2
+Patch0:         clisp-2.47-cpp.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:	imake
 BuildRequires:	libsigsegv-devel
@@ -70,6 +71,7 @@ Files necessary for linking CLISP.
 
 %prep
 %setup -q
+%patch0 -p1 -b .cpp
 sed -i 's|http://www.lisp.org/HyperSpec/|http://www.lispworks.com/documentation/HyperSpec/|g' \
     doc/* src/*.d src/*.lisp
 
