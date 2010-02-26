@@ -1,39 +1,38 @@
 Name:		clisp
 Summary:	Common Lisp (ANSI CL) implementation
-Version:	2.47
-Release: 	4%{?dist}
+Version:	2.48
+Release:	1%{?dist}
 
 Group:		Development/Languages
 License:	GPLv2
 URL:		http://clisp.cons.org
-Source:		http://download.sourceforge.net/clisp/clisp-%{version}.tar.bz2
-Patch0:         clisp-2.47-cpp.patch
+Source:		http://downloads.sourceforge.net/project/clisp/clisp/%{version}/clisp-%{version}.tar.bz2
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:	imake
 BuildRequires:	libsigsegv-devel
 BuildRequires:	readline-devel
-BuildRequires:  dbus-devel
-BuildRequires:  diffutils
-BuildRequires:  fcgi-devel
-BuildRequires:  ffcall
-BuildRequires:  gdbm-devel
-BuildRequires:  gettext
-BuildRequires:  gtk2-devel
-BuildRequires:  libICE-devel
-BuildRequires:  libSM-devel
-BuildRequires:  libX11-devel
-BuildRequires:  libXaw-devel
-BuildRequires:  libXext-devel
-BuildRequires:  libXft-devel
-BuildRequires:  libXmu-devel
-BuildRequires:  libXrender-devel
-BuildRequires:  libXt-devel
-BuildRequires:  libglade2-devel
-BuildRequires:  pcre-devel
-BuildRequires:  postgresql-devel
-BuildRequires:  zlib-devel
-#BuildRequires:  db4-devel
-#BuildRequires:  pari-devel
+BuildRequires:	dbus-devel
+BuildRequires:	diffutils
+BuildRequires:	fcgi-devel
+BuildRequires:	ffcall
+BuildRequires:	gdbm-devel
+BuildRequires:	gettext
+BuildRequires:	gtk2-devel
+BuildRequires:	libICE-devel
+BuildRequires:	libSM-devel
+BuildRequires:	libX11-devel
+BuildRequires:	libXaw-devel
+BuildRequires:	libXext-devel
+BuildRequires:	libXft-devel
+BuildRequires:	libXmu-devel
+BuildRequires:	libXrender-devel
+BuildRequires:	libXt-devel
+BuildRequires:	libglade2-devel
+BuildRequires:	pcre-devel
+BuildRequires:	postgresql-devel
+BuildRequires:	zlib-devel
+BuildRequires:	db4-devel
+BuildRequires:	pari-devel
 
 ExcludeArch:	ppc64
 
@@ -63,7 +62,7 @@ Maxima, ACL2 and many other Common Lisp packages.
 %package devel
 Summary:	Development files for CLISP
 Group:		Development/Languages
-Requires:	%{name} = %{version}-%{release}
+Requires:	%{name} = %{version}-%{release}, automake
 
 %description devel
 Files necessary for linking CLISP.
@@ -71,7 +70,6 @@ Files necessary for linking CLISP.
 
 %prep
 %setup -q
-%patch0 -p1 -b .cpp
 sed -i 's|http://www.lisp.org/HyperSpec/|http://www.lispworks.com/documentation/HyperSpec/|g' \
     doc/* src/*.d src/*.lisp
 
@@ -85,28 +83,31 @@ ulimit -s unlimited
 %endif
 
 ./configure --prefix=%{_prefix} \
-            --libdir=%{_libdir} \
-            --mandir=%{_mandir} \
-            --docdir=%{_docdir}/clisp-%{version} \
-            --fsstnd=redhat \
-            --hyperspec=http://www.lispworks.com/documentation/HyperSpec/ \
-            --with-module=bindings/glibc \
-            --with-module=clx/new-clx \
-            --with-module=dbus \
-            --with-module=fastcgi \
-            --with-module=gdbm \
-            --with-module=gtk2 \
-            --with-module=i18n \
-            --with-module=pcre \
-            --with-module=postgresql \
-            --with-module=rawsock \
-            --with-module=regexp \
-            --with-module=syscalls \
-            --with-module=wildcard \
-            --with-module=zlib \
-            --with-readline \
-            --cbc \
-            build CFLAGS=%opt_flags
+	    --libdir=%{_libdir} \
+	    --mandir=%{_mandir} \
+	    --docdir=%{_docdir}/clisp-%{version} \
+	    --fsstnd=redhat \
+	    --hyperspec=http://www.lispworks.com/documentation/HyperSpec/ \
+	    --with-module=berkeley-db \
+	    --with-module=bindings/glibc \
+	    --with-module=clx/new-clx \
+	    --with-module=dbus \
+	    --with-module=fastcgi \
+	    --with-module=gdbm \
+	    --with-module=gtk2 \
+	    --with-module=i18n \
+	    --with-module=pari \
+	    --with-module=pcre \
+	    --with-module=postgresql \
+	    --with-module=rawsock \
+	    --with-module=readline \
+	    --with-module=regexp \
+	    --with-module=syscalls \
+	    --with-module=wildcard \
+	    --with-module=zlib \
+	    --with-readline \
+	    --cbc \
+	    build CFLAGS=%opt_flags
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -151,6 +152,7 @@ cat %{name}low.lang >> %{name}.lang
 %{_libdir}/clisp-*/full/*.h
 %{_libdir}/clisp-*/full/makevars
 %{_libdir}/clisp-*/linkkit
+%{_datadir}/aclocal/clisp.m4
 
 
 %clean
@@ -158,6 +160,9 @@ rm -fr $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Feb 26 2010 Jerry James <loganjerry@gmail.com> - 2.48-1
+- new release 2.48
+
 * Fri Jul 24 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.47-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_12_Mass_Rebuild
 
