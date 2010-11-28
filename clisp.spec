@@ -1,7 +1,7 @@
 Name:		clisp
 Summary:	Common Lisp (ANSI CL) implementation
 Version:	2.48
-Release:	1%{?dist}
+Release:	2%{?dist}
 
 Group:		Development/Languages
 License:	GPLv2
@@ -160,6 +160,9 @@ rm -fr $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun Nov 28 2010 Rex Dieter <rdieter@fedoraproject.org> - 2.48-2
+- rebuild (libsigsegv)
+
 * Fri Feb 26 2010 Jerry James <loganjerry@gmail.com> - 2.48-1
 - new release 2.48
 
