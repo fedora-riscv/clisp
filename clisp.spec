@@ -1,7 +1,7 @@
 Name:		clisp
 Summary:	Common Lisp (ANSI CL) implementation
-Version:	2.48
-Release:	2%{?dist}
+Version:	2.49
+Release:	1%{?dist}
 
 Group:		Development/Languages
 License:	GPLv2
@@ -10,6 +10,7 @@ Source:		http://downloads.sourceforge.net/project/clisp/clisp/%{version}/clisp-%
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:	imake
 BuildRequires:	libsigsegv-devel
+# FIXME: switch to gplv2-compatible compat-readline5-devel, see http://bugzilla.redhat.com/511303
 BuildRequires:	readline-devel
 BuildRequires:	dbus-devel
 BuildRequires:	diffutils
@@ -62,6 +63,7 @@ Maxima, ACL2 and many other Common Lisp packages.
 %package devel
 Summary:	Development files for CLISP
 Group:		Development/Languages
+Provides:	%{name}-static = %{version}-%{release} 
 Requires:	%{name} = %{version}-%{release}, automake
 
 %description devel
@@ -129,29 +131,38 @@ cat %{name}low.lang >> %{name}.lang
 %{_mandir}/man1/*
 %{_docdir}/clisp-%{version}
 %dir %{_libdir}/clisp-*/base
-%dir %{_libdir}/clisp-*/full
 %dir %{_libdir}/clisp-*
 %{_libdir}/clisp-*/base/lispinit.mem
 %{_libdir}/clisp-*/base/lisp.run
-%{_libdir}/clisp-*/full/lispinit.mem
-%{_libdir}/clisp-*/full/lisp.run
-%{_libdir}/clisp-*/data
+%{_libdir}/clisp-*/data/
+# FIXME: many of these module dirs contain Makefile,*.{a,o,h} 
+# similar base/ in -devel below -- Rex
+%{_libdir}/clisp-*/berkeley-db/
+%{_libdir}/clisp-*/bindings/
+%{_libdir}/clisp-*/build-aux/
+%{_libdir}/clisp-*/clx/
+%{_libdir}/clisp-*/dbus/
+%{_libdir}/clisp-*/dynmod/
+%{_libdir}/clisp-*/fastcgi/
+%{_libdir}/clisp-*/gdbm/
+%{_libdir}/clisp-*/gtk2/
+%{_libdir}/clisp-*/pari/
+%{_libdir}/clisp-*/pcre/
+%{_libdir}/clisp-*/postgresql/
+%{_libdir}/clisp-*/rawsock/
+%{_libdir}/clisp-*/wildcard/
+%{_libdir}/clisp-*/zlib/
 %{_datadir}/emacs/site-lisp/*
 %{_datadir}/vim/vimfiles/after/syntax/*
 
-
 %files devel
 %defattr(-,root,root,-)
-%attr(0755,root,root) %{_libdir}/clisp-*/clisp-link
+%{_bindir}/clisp-link
 %{_libdir}/clisp-*/base/*.a
 %{_libdir}/clisp-*/base/*.o
 %{_libdir}/clisp-*/base/*.h
 %{_libdir}/clisp-*/base/makevars
-%{_libdir}/clisp-*/full/*.a
-%{_libdir}/clisp-*/full/*.o
-%{_libdir}/clisp-*/full/*.h
-%{_libdir}/clisp-*/full/makevars
-%{_libdir}/clisp-*/linkkit
+%{_libdir}/clisp-*/linkkit/
 %{_datadir}/aclocal/clisp.m4
 
 
@@ -160,6 +171,10 @@ rm -fr $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun Nov 28 2010 Rex Dieter <rdieter@fedoraproject.org> - 2.49-1
+- clisp-2.49 (#612469)
+- -devel: Provides: %%name-static (#609602)
+
 * Sun Nov 28 2010 Rex Dieter <rdieter@fedoraproject.org> - 2.48-2
 - rebuild (libsigsegv)
 
