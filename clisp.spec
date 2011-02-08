@@ -1,7 +1,7 @@
 Name:		clisp
 Summary:	Common Lisp (ANSI CL) implementation
 Version:	2.49
-Release:	1%{?dist}
+Release:	2%{?dist}
 
 Group:		Development/Languages
 License:	GPLv2
@@ -171,6 +171,9 @@ rm -fr $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Feb 08 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.49-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
+
 * Sun Nov 28 2010 Rex Dieter <rdieter@fedoraproject.org> - 2.49-1
 - clisp-2.49 (#612469)
 - -devel: Provides: %%name-static (#609602)
