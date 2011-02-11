@@ -1,23 +1,21 @@
 Name:		clisp
-Summary:	Common Lisp (ANSI CL) implementation
+Summary:	ANSI Common Lisp implementation
 Version:	2.49
-Release:	2%{?dist}
+Release:	3%{?dist}
 
 Group:		Development/Languages
 License:	GPLv2
 URL:		http://clisp.cons.org
-Source:		http://downloads.sourceforge.net/project/clisp/clisp/%{version}/clisp-%{version}.tar.bz2
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildRequires:	imake
-BuildRequires:	libsigsegv-devel
-# FIXME: switch to gplv2-compatible compat-readline5-devel, see http://bugzilla.redhat.com/511303
-BuildRequires:	readline-devel
+Source0:	http://downloads.sourceforge.net/project/clisp/clisp/%{version}/clisp-%{version}.tar.bz2
+BuildRequires:	compat-readline5-devel
+BuildRequires:	db4-devel
 BuildRequires:	dbus-devel
-BuildRequires:	diffutils
 BuildRequires:	fcgi-devel
 BuildRequires:	ffcall
 BuildRequires:	gdbm-devel
-BuildRequires:	gettext
+BuildRequires:	gettext-devel
+BuildRequires:	ghostscript
+BuildRequires:	groff
 BuildRequires:	gtk2-devel
 BuildRequires:	libICE-devel
 BuildRequires:	libSM-devel
@@ -29,12 +27,14 @@ BuildRequires:	libXmu-devel
 BuildRequires:	libXrender-devel
 BuildRequires:	libXt-devel
 BuildRequires:	libglade2-devel
+BuildRequires:	libsigsegv-devel
+BuildRequires:	libsvm-devel
+BuildRequires:	pari-devel
 BuildRequires:	pcre-devel
 BuildRequires:	postgresql-devel
 BuildRequires:	zlib-devel
-BuildRequires:	db4-devel
-BuildRequires:	pari-devel
 
+# See Red Hat bug #238954
 ExcludeArch:	ppc64
 
 
@@ -67,14 +67,29 @@ Provides:	%{name}-static = %{version}-%{release}
 Requires:	%{name} = %{version}-%{release}, automake
 
 %description devel
-Files necessary for linking CLISP.
+Files necessary for linking CLISP programs.
 
 
 %prep
 %setup -q
-sed -i 's|http://www.lisp.org/HyperSpec/|http://www.lispworks.com/documentation/HyperSpec/|g' \
-    doc/* src/*.d src/*.lisp
 
+# Convince CLisp to build against compat-readline5 instead of readline.
+# This is to avoid pulling the GPLv3 readline 6 into a GPLv2 CLisp binary.
+# See Red Hat bug #511303.
+mkdir -p readline/include
+ln -s %{_includedir}/readline5/readline readline/include/readline
+ln -s %{_libdir}/readline5 readline/%{_lib}
+
+# Change URLs not affected by the --hyperspec argument to configure
+sed -i 's|lisp.org/HyperSpec/Body/chap-7.html|lispworks.com/documentation/HyperSpec/Body/07_.htm|' \
+    src/clos-package.lisp
+sed -i 's|lisp.org/HyperSpec/FrontMatter|lispworks.com/documentation/HyperSpec/Front|' \
+    src/_README.*
+
+# We only link against libraries in system directories, so we need -L dir in
+# place of -Wl,-rpath -Wl,dir
+cp -p src/build-aux/config.rpath config.rpath.orig
+sed -i -e 's/${wl}-rpath ${wl}/-L/g' src/build-aux/config.rpath
 
 %build
 %ifarch ppc ppc64
@@ -84,6 +99,8 @@ ulimit -s unlimited
 %define opt_flags "$RPM_OPT_FLAGS"
 %endif
 
+# Do not need to specify base modules: i18n, readline, regexp, syscalls
+# The dirkey module currently can only be built on Windows/Cygwin/MinGW
 ./configure --prefix=%{_prefix} \
 	    --libdir=%{_libdir} \
 	    --mandir=%{_mandir} \
@@ -97,19 +114,18 @@ ulimit -s unlimited
 	    --with-module=fastcgi \
 	    --with-module=gdbm \
 	    --with-module=gtk2 \
-	    --with-module=i18n \
+	    --with-module=libsvm \
 	    --with-module=pari \
 	    --with-module=pcre \
 	    --with-module=postgresql \
 	    --with-module=rawsock \
-	    --with-module=readline \
-	    --with-module=regexp \
-	    --with-module=syscalls \
 	    --with-module=wildcard \
 	    --with-module=zlib \
-	    --with-readline \
+	    --with-libreadline-prefix=`pwd`/readline \
 	    --cbc \
-	    build CFLAGS=%opt_flags
+	    build \
+	    CFLAGS="$RPM_OPT_FLAGS -I/usr/include/libsvm -Wa,--noexecstack" \
+	    LDFLAGS="-Wl,-z,noexecstack"
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -124,6 +140,12 @@ find $RPM_BUILD_ROOT%{_libdir} -name '*.dvi' | xargs rm -f
 %find_lang %{name}low
 cat %{name}low.lang >> %{name}.lang
 
+# Put back the original config.rpath, and fix executable bits
+cp -p config.rpath.orig $RPM_BUILD_ROOT/%{_libdir}/clisp-%{version}/build-aux/config.rpath
+chmod a+x \
+  $RPM_BUILD_ROOT/%{_libdir}/clisp-%{version}/build-aux/config.guess \
+  $RPM_BUILD_ROOT/%{_libdir}/clisp-%{version}/build-aux/config.sub \
+  $RPM_BUILD_ROOT/%{_libdir}/clisp-%{version}/build-aux/depcomp
 
 %files -f %{name}.lang
 %defattr(-,root,root,-)
@@ -146,6 +168,7 @@ cat %{name}low.lang >> %{name}.lang
 %{_libdir}/clisp-*/fastcgi/
 %{_libdir}/clisp-*/gdbm/
 %{_libdir}/clisp-*/gtk2/
+%{_libdir}/clisp-*/libsvm/
 %{_libdir}/clisp-*/pari/
 %{_libdir}/clisp-*/pcre/
 %{_libdir}/clisp-*/postgresql/
@@ -171,6 +194,11 @@ rm -fr $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Feb 11 2011 Jerry James <loganjerry@gmail.com> - 2.49-3
+- Build with compat-readline5 instead of readline (#511303)
+- Build the libsvm module
+- Get rid of the execstack flag on Lisp images
+
 * Tue Feb 08 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.49-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
 
