@@ -1,7 +1,7 @@
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
 Version:	2.49
-Release:	3%{?dist}
+Release:	1%{?dist}
 
 Group:		Development/Languages
 License:	GPLv2
@@ -194,17 +194,13 @@ rm -fr $RPM_BUILD_ROOT
 
 
 %changelog
-* Fri Feb 11 2011 Jerry James <loganjerry@gmail.com> - 2.49-3
+* Fri Feb 11 2011 Jerry James <loganjerry@gmail.com> - 2.49-1
 - Build with compat-readline5 instead of readline (#511303)
 - Build the libsvm module
 - Get rid of the execstack flag on Lisp images
-
-* Tue Feb 08 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.49-2
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
-
-* Sun Nov 28 2010 Rex Dieter <rdieter@fedoraproject.org> - 2.49-1
-- clisp-2.49 (#612469)
-- -devel: Provides: %%name-static (#609602)
+- Changes from Rex Dieter <rdieter@fedoraproject.org>:
+  o clisp-2.49 (#612469)
+  o -devel: Provides: %%name-static (#609602)
 
 * Sun Nov 28 2010 Rex Dieter <rdieter@fedoraproject.org> - 2.48-2
 - rebuild (libsigsegv)
