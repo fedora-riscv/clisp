@@ -1,12 +1,14 @@
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
 Version:	2.49
-Release:	3%{?dist}
+Release:	4%{?dist}
 
 Group:		Development/Languages
 License:	GPLv2
 URL:		http://clisp.cons.org
-Source0:	http://downloads.sourceforge.net/project/clisp/clisp/%{version}/clisp-%{version}.tar.bz2
+Source0:	http://downloads.sourceforge.net/clisp/clisp-%{version}.tar.bz2
+# Adapt to libsvm 3.1.  Sent upstream 23 Jun 2011.
+Patch0:		clisp-libsvm.patch
 BuildRequires:	compat-readline5-devel
 BuildRequires:	db4-devel
 BuildRequires:	dbus-devel
@@ -17,6 +19,7 @@ BuildRequires:	gettext-devel
 BuildRequires:	ghostscript
 BuildRequires:	groff
 BuildRequires:	gtk2-devel
+BuildRequires:	gzip
 BuildRequires:	libICE-devel
 BuildRequires:	libSM-devel
 BuildRequires:	libX11-devel
@@ -33,6 +36,9 @@ BuildRequires:	pari-devel
 BuildRequires:	pcre-devel
 BuildRequires:	postgresql-devel
 BuildRequires:	zlib-devel
+%ifarch %{ix86} ppc sparc
+BuildRequires:	lightning
+%endif
 
 # See Red Hat bug #238954
 ExcludeArch:	ppc64
@@ -72,6 +78,7 @@ Files necessary for linking CLISP programs.
 
 %prep
 %setup -q
+%patch0
 
 # Convince CLisp to build against compat-readline5 instead of readline.
 # This is to avoid pulling the GPLv3 readline 6 into a GPLv2 CLisp binary.
@@ -93,10 +100,7 @@ sed -i -e 's/${wl}-rpath ${wl}/-L/g' src/build-aux/config.rpath
 
 %build
 %ifarch ppc ppc64
-%define opt_flags "$RPM_OPT_FLAGS -DNO_GENERATIONAL_GC -DNO_MULTIMAP_FILE -DNO_SINGLEMAP"
 ulimit -s unlimited
-%else
-%define opt_flags "$RPM_OPT_FLAGS"
 %endif
 
 # Do not need to specify base modules: i18n, readline, regexp, syscalls
@@ -107,6 +111,9 @@ ulimit -s unlimited
 	    --docdir=%{_docdir}/clisp-%{version} \
 	    --fsstnd=redhat \
 	    --hyperspec=http://www.lispworks.com/documentation/HyperSpec/ \
+%ifarch %{ix86} ppc sparc
+	    --with-jitc=lightning \
+%endif
 	    --with-module=berkeley-db \
 	    --with-module=bindings/glibc \
 	    --with-module=clx/new-clx \
@@ -124,8 +131,12 @@ ulimit -s unlimited
 	    --with-libreadline-prefix=`pwd`/readline \
 	    --cbc \
 	    build \
-	    CFLAGS="$RPM_OPT_FLAGS -I/usr/include/libsvm -Wa,--noexecstack" \
-	    LDFLAGS="-Wl,-z,noexecstack"
+%ifarch ppc ppc64
+	    CFLAGS="${RPM_OPT_FLAGS} -DNO_GENERATIONAL_GC -DNO_MULTIMAP_FILE -DNO_SINGLEMAP -I/usr/include/readline5 -I/usr/include/libsvm -Wa,--noexecstack -L%{_libdir}/readline5" \
+%else
+	    CFLAGS="${RPM_OPT_FLAGS} -I/usr/include/readline5 -I/usr/include/libsvm -Wa,--noexecstack -L%{_libdir}/readline5" \
+%endif
+	    LDFLAGS="-L%{_libdir}/readline5 -Wl,-z,noexecstack"
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -194,6 +205,11 @@ rm -fr $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Jun 23 2011 Jerry James <loganjerry@gmail.com> - 2.49-4
+- Add libsvm patch to fix FTBFS on Rawhide (bz 715970)
+- Fix readline module to also use compat-readline5 instead of readline6
+- Enable use of lightning on supported arches
+
 * Fri Feb 11 2011 Jerry James <loganjerry@gmail.com> - 2.49-3
 - Build with compat-readline5 instead of readline (#511303)
 - Build the libsvm module
