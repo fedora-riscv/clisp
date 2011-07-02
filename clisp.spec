@@ -36,9 +36,6 @@ BuildRequires:	pari-devel
 BuildRequires:	pcre-devel
 BuildRequires:	postgresql-devel
 BuildRequires:	zlib-devel
-%ifarch %{ix86} ppc sparc
-BuildRequires:	lightning
-%endif
 
 # See Red Hat bug #238954
 ExcludeArch:	ppc64
@@ -111,9 +108,6 @@ ulimit -s unlimited
 	    --docdir=%{_docdir}/clisp-%{version} \
 	    --fsstnd=redhat \
 	    --hyperspec=http://www.lispworks.com/documentation/HyperSpec/ \
-%ifarch %{ix86} ppc sparc
-	    --with-jitc=lightning \
-%endif
 	    --with-module=berkeley-db \
 	    --with-module=bindings/glibc \
 	    --with-module=clx/new-clx \
@@ -139,7 +133,6 @@ ulimit -s unlimited
 	    LDFLAGS="-L%{_libdir}/readline5 -Wl,-z,noexecstack"
 
 %install
-rm -rf $RPM_BUILD_ROOT
 make -C build DESTDIR=$RPM_BUILD_ROOT install
 rm -f $RPM_BUILD_ROOT%{_docdir}/clisp-%{version}/doc/clisp.{dvi,1,ps}
 cp -p doc/mop-spec.pdf $RPM_BUILD_ROOT%{_docdir}/clisp-%{version}/doc
@@ -159,7 +152,6 @@ chmod a+x \
   $RPM_BUILD_ROOT/%{_libdir}/clisp-%{version}/build-aux/depcomp
 
 %files -f %{name}.lang
-%defattr(-,root,root,-)
 %{_bindir}/clisp
 %{_mandir}/man1/*
 %{_docdir}/clisp-%{version}
@@ -190,7 +182,6 @@ chmod a+x \
 %{_datadir}/vim/vimfiles/after/syntax/*
 
 %files devel
-%defattr(-,root,root,-)
 %{_bindir}/clisp-link
 %{_libdir}/clisp-*/base/*.a
 %{_libdir}/clisp-*/base/*.o
@@ -200,15 +191,11 @@ chmod a+x \
 %{_datadir}/aclocal/clisp.m4
 
 
-%clean
-rm -fr $RPM_BUILD_ROOT
-
-
 %changelog
 * Thu Jun 23 2011 Jerry James <loganjerry@gmail.com> - 2.49-4
 - Add libsvm patch to fix FTBFS on Rawhide (bz 715970)
 - Fix readline module to also use compat-readline5 instead of readline6
-- Enable use of lightning on supported arches
+- Drop unnecessary spec file elements (clean script, etc.)
 
 * Fri Feb 11 2011 Jerry James <loganjerry@gmail.com> - 2.49-3
 - Build with compat-readline5 instead of readline (#511303)
