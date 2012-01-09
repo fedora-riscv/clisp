@@ -1,11 +1,11 @@
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
 Version:	2.49
-Release:	4%{?dist}
+Release:	5%{?dist}
 
 Group:		Development/Languages
 License:	GPLv2
-URL:		http://clisp.cons.org
+URL:		http://www.clisp.org/
 Source0:	http://downloads.sourceforge.net/clisp/clisp-%{version}.tar.bz2
 # Adapt to libsvm 3.1.  Sent upstream 23 Jun 2011.
 Patch0:		clisp-libsvm.patch
@@ -67,7 +67,7 @@ Maxima, ACL2 and many other Common Lisp packages.
 Summary:	Development files for CLISP
 Group:		Development/Languages
 Provides:	%{name}-static = %{version}-%{release} 
-Requires:	%{name} = %{version}-%{release}, automake
+Requires:	%{name}%{?_isa} = %{version}-%{release}, automake
 
 %description devel
 Files necessary for linking CLISP programs.
@@ -192,6 +192,10 @@ chmod a+x \
 
 
 %changelog
+* Sun Jan  8 2012 Jerry James <loganjerry@gmail.com> - 2.49-5
+- Rebuild for GCC 4.7
+- Minor spec file cleanups
+
 * Thu Jun 23 2011 Jerry James <loganjerry@gmail.com> - 2.49-4
 - Add libsvm patch to fix FTBFS on Rawhide (bz 715970)
 - Fix readline module to also use compat-readline5 instead of readline6
