@@ -1,0 +1,74 @@
+--- src/socket.d.orig	2009-10-08 08:45:13.000000000 -0600
++++ src/socket.d	2012-01-12 11:22:24.701723636 -0700
+@@ -57,8 +57,8 @@
+ /* ============ hostnames and IP addresses only (no sockets) ============
+ 
+  Fetches the machine's host name.
+- get_hostname(host =);
+- The name is allocated on the stack, with dynamic extent.
++ get_hostname(hostname);
++ where hostname is an array of MAXHOSTNAMELEN+1 characters.
+  < const char* host: The host name.
+  (Note: In some cases we could get away with less system calls by simply
+  setting
+@@ -67,13 +67,12 @@
+  sds: never: you will always get localhost/127.0.0.1 - what's the point? */
+ #if defined(HAVE_GETHOSTNAME)
+ /* present on all supported unix systems and on woe32 */
+-  #define get_hostname(host_assignment)                                 \
+-    do {  var char hostname[MAXHOSTNAMELEN+1];                          \
++  #define get_hostname(hostname)                                        \
++    do {                                                                \
+       begin_system_call();                                              \
+       if ( gethostname(&hostname[0],MAXHOSTNAMELEN) <0) { SOCK_error(); } \
+       end_system_call();                                                \
+       hostname[MAXHOSTNAMELEN] = '\0';                                  \
+-      host_assignment &hostname[0];                                     \
+     } while(0)
+ #else
+   #error get_hostname is not defined
+@@ -207,8 +206,8 @@ LISPFUNN(machine_instance,0)
+          (if (or (null address) (zerop (length address)))
+            hostname
+            (apply #'string-concat hostname " [" (inet-ntop address) "]"))) */
+-    var const char* host;
+-    get_hostname(host =);
++    var char host[MAXHOSTNAMELEN+1];
++    get_hostname(host);
+     result = asciz_to_string(host,O(misc_encoding)); /* hostname as result */
+    #ifdef HAVE_GETHOSTBYNAME
+     pushSTACK(result); /* hostname as 1st string */
+@@ -389,8 +388,8 @@ local int resolve_host1 (const void* add
+ modexp struct hostent* resolve_host (object arg) {
+   var struct hostent* he;
+   if (eq(arg,S(Kdefault))) {
+-    var char* host;
+-    get_hostname(host =);
++    var char host[MAXHOSTNAMELEN+1];
++    get_hostname(host);
+     begin_system_call();
+     he = gethostbyname(host);
+     end_system_call();
+@@ -724,8 +723,9 @@ global SOCKET connect_to_x_server (const
+     if (conntype == conn_tcp) {
+       var unsigned short port = X_TCP_PORT+display;
+       if (host[0] == '\0') {
+-        get_hostname(host =);
+-        fd = with_host_port(host,port,&connect_to_x_via_ip,NULL);
++        var char hostname[MAXHOSTNAMELEN+1];
++        get_hostname(hostname);
++        fd = with_host_port(hostname,port,&connect_to_x_via_ip,NULL);
+       } else {
+         fd = with_host_port(host,port,&connect_to_x_via_ip,NULL);
+       }
+@@ -798,8 +798,8 @@ global host_data_t * socket_getlocalname
+   if (socket_getlocalname_aux(socket_handle,hd) == NULL)
+     return NULL;
+   if (resolve_p) { /* Fill in hd->truename. */
+-    var const char* host;
+-    get_hostname(host =); /* was: host = "localhost"; */
++    var char host[MAXHOSTNAMELEN+1];
++    get_hostname(host); /* was: host = "localhost"; */
+     ASSERT(strlen(host) <= MAXHOSTNAMELEN);
+     strcpy(hd->truename,host);
+   } else {

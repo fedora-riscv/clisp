@@ -9,6 +9,8 @@ URL:		http://www.clisp.org/
 Source0:	http://downloads.sourceforge.net/clisp/clisp-%{version}.tar.bz2
 # Adapt to libsvm 3.1.  Sent upstream 23 Jun 2011.
 Patch0:		clisp-libsvm.patch
+# Fix an illegal C construct that allows GCC 4.7 to produce bad code.
+Patch1:		clisp-hostname.patch
 BuildRequires:	compat-readline5-devel
 BuildRequires:	db4-devel
 BuildRequires:	dbus-devel
@@ -76,6 +78,7 @@ Files necessary for linking CLISP programs.
 %prep
 %setup -q
 %patch0
+%patch1
 
 # Convince CLisp to build against compat-readline5 instead of readline.
 # This is to avoid pulling the GPLv3 readline 6 into a GPLv2 CLisp binary.
