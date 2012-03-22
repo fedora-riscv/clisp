@@ -1,7 +1,7 @@
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
 Version:	2.49
-Release:	5%{?dist}
+Release:	6%{?dist}
 
 Group:		Development/Languages
 License:	GPLv2
@@ -88,20 +88,26 @@ ln -s %{_includedir}/readline5/readline readline/include/readline
 ln -s %{_libdir}/readline5 readline/%{_lib}
 
 # Change URLs not affected by the --hyperspec argument to configure
-sed -i 's|lisp.org/HyperSpec/Body/chap-7.html|lispworks.com/documentation/HyperSpec/Body/07_.htm|' \
+sed -i.orig 's|lisp.org/HyperSpec/Body/chap-7.html|lispworks.com/documentation/HyperSpec/Body/07_.htm|' \
     src/clos-package.lisp
-sed -i 's|lisp.org/HyperSpec/FrontMatter|lispworks.com/documentation/HyperSpec/Front|' \
-    src/_README.*
+touch -r src/clos-package.lisp.orig src/clos-package.lisp
+rm -f src/clos-package.lisp.orig
+for f in src/_README.*; do
+  sed -i.orig 's|lisp.org/HyperSpec/FrontMatter|lispworks.com/documentation/HyperSpec/Front|' $f
+  touch -r ${f}.orig $f
+  rm -f ${f}.orig
+done
 
 # We only link against libraries in system directories, so we need -L dir in
 # place of -Wl,-rpath -Wl,dir
 cp -p src/build-aux/config.rpath config.rpath.orig
 sed -i -e 's/${wl}-rpath ${wl}/-L/g' src/build-aux/config.rpath
 
+# Enable firefox to be the default browser for displaying documentation
+sed -i 's/;; \((setq \*browser\* .*)\)/\1/' src/cfgunix.lisp
+
 %build
-%ifarch ppc ppc64
 ulimit -s unlimited
-%endif
 
 # Do not need to specify base modules: i18n, readline, regexp, syscalls
 # The dirkey module currently can only be built on Windows/Cygwin/MinGW
@@ -156,45 +162,133 @@ chmod a+x \
 
 %files -f %{name}.lang
 %{_bindir}/clisp
-%{_mandir}/man1/*
+%{_mandir}/man1/clisp.1*
 %{_docdir}/clisp-%{version}
-%dir %{_libdir}/clisp-*/base
-%dir %{_libdir}/clisp-*
-%{_libdir}/clisp-*/base/lispinit.mem
-%{_libdir}/clisp-*/base/lisp.run
-%{_libdir}/clisp-*/data/
-# FIXME: many of these module dirs contain Makefile,*.{a,o,h} 
-# similar base/ in -devel below -- Rex
-%{_libdir}/clisp-*/berkeley-db/
-%{_libdir}/clisp-*/bindings/
-%{_libdir}/clisp-*/build-aux/
-%{_libdir}/clisp-*/clx/
-%{_libdir}/clisp-*/dbus/
-%{_libdir}/clisp-*/dynmod/
-%{_libdir}/clisp-*/fastcgi/
-%{_libdir}/clisp-*/gdbm/
-%{_libdir}/clisp-*/gtk2/
-%{_libdir}/clisp-*/libsvm/
-%{_libdir}/clisp-*/pari/
-%{_libdir}/clisp-*/pcre/
-%{_libdir}/clisp-*/postgresql/
-%{_libdir}/clisp-*/rawsock/
-%{_libdir}/clisp-*/wildcard/
-%{_libdir}/clisp-*/zlib/
+%dir %{_libdir}/clisp-%{version}/
+%dir %{_libdir}/clisp-%{version}/base/
+%{_libdir}/clisp-%{version}/base/lispinit.mem
+%{_libdir}/clisp-%{version}/base/lisp.run
+%dir %{_libdir}/clisp-%{version}/berkeley-db/
+%{_libdir}/clisp-%{version}/berkeley-db/*.fas
+%dir %{_libdir}/clisp-%{version}/bindings/
+%dir %{_libdir}/clisp-%{version}/bindings/glibc/
+%{_libdir}/clisp-%{version}/bindings/glibc/*.fas
+%dir %{_libdir}/clisp-%{version}/clx/
+%dir %{_libdir}/clisp-%{version}/clx/new-clx/
+%{_libdir}/clisp-%{version}/clx/new-clx/*.fas
+%{_libdir}/clisp-%{version}/data/
+%dir %{_libdir}/clisp-%{version}/dbus/
+%{_libdir}/clisp-%{version}/dbus/*.fas
+%{_libdir}/clisp-%{version}/dynmod/
+%dir %{_libdir}/clisp-%{version}/fastcgi/
+%{_libdir}/clisp-%{version}/fastcgi/*.fas
+%dir %{_libdir}/clisp-%{version}/gdbm/
+%{_libdir}/clisp-%{version}/gdbm/*.fas
+%dir %{_libdir}/clisp-%{version}/gtk2/
+%{_libdir}/clisp-%{version}/gtk2/*.fas
+%dir %{_libdir}/clisp-%{version}/libsvm/
+%{_libdir}/clisp-%{version}/libsvm/*.fas
+%dir %{_libdir}/clisp-%{version}/pari/
+%{_libdir}/clisp-%{version}/pari/*.fas
+%dir %{_libdir}/clisp-%{version}/pcre/
+%{_libdir}/clisp-%{version}/pcre/*.fas
+%dir %{_libdir}/clisp-%{version}/postgresql/
+%{_libdir}/clisp-%{version}/postgresql/*.fas
+%dir %{_libdir}/clisp-%{version}/rawsock/
+%{_libdir}/clisp-%{version}/rawsock/*.fas
+%dir %{_libdir}/clisp-%{version}/wildcard/
+%{_libdir}/clisp-%{version}/wildcard/*.fas
+%dir %{_libdir}/clisp-%{version}/zlib/
+%{_libdir}/clisp-%{version}/zlib/*.fas
 %{_datadir}/emacs/site-lisp/*
 %{_datadir}/vim/vimfiles/after/syntax/*
 
 %files devel
 %{_bindir}/clisp-link
-%{_libdir}/clisp-*/base/*.a
-%{_libdir}/clisp-*/base/*.o
-%{_libdir}/clisp-*/base/*.h
-%{_libdir}/clisp-*/base/makevars
-%{_libdir}/clisp-*/linkkit/
+%{_mandir}/man1/clisp-link.1*
+%{_libdir}/clisp-%{version}/base/*.a
+%{_libdir}/clisp-%{version}/base/*.o
+%{_libdir}/clisp-%{version}/base/*.h
+%{_libdir}/clisp-%{version}/base/makevars
+%{_libdir}/clisp-%{version}/berkeley-db/Makefile
+%{_libdir}/clisp-%{version}/berkeley-db/*.lisp
+%{_libdir}/clisp-%{version}/berkeley-db/*.o
+%{_libdir}/clisp-%{version}/berkeley-db/*.sh
+%{_libdir}/clisp-%{version}/bindings/glibc/Makefile
+%{_libdir}/clisp-%{version}/bindings/glibc/*.lisp
+%{_libdir}/clisp-%{version}/bindings/glibc/*.o
+%{_libdir}/clisp-%{version}/bindings/glibc/*.sh
+%{_libdir}/clisp-%{version}/build-aux/
+%{_libdir}/clisp-%{version}/clx/new-clx/demos/
+%{_libdir}/clisp-%{version}/clx/new-clx/README
+%{_libdir}/clisp-%{version}/clx/new-clx/Makefile
+%{_libdir}/clisp-%{version}/clx/new-clx/*.lisp
+%{_libdir}/clisp-%{version}/clx/new-clx/*.o
+%{_libdir}/clisp-%{version}/clx/new-clx/*.sh
+%{_libdir}/clisp-%{version}/dbus/Makefile
+%{_libdir}/clisp-%{version}/dbus/*.lisp
+%{_libdir}/clisp-%{version}/dbus/*.o
+%{_libdir}/clisp-%{version}/dbus/*.sh
+%{_libdir}/clisp-%{version}/fastcgi/README
+%{_libdir}/clisp-%{version}/fastcgi/Makefile
+%{_libdir}/clisp-%{version}/fastcgi/*.lisp
+%{_libdir}/clisp-%{version}/fastcgi/*.o
+%{_libdir}/clisp-%{version}/fastcgi/*.sh
+%{_libdir}/clisp-%{version}/gdbm/Makefile
+%{_libdir}/clisp-%{version}/gdbm/*.lisp
+%{_libdir}/clisp-%{version}/gdbm/*.o
+%{_libdir}/clisp-%{version}/gdbm/*.sh
+%{_libdir}/clisp-%{version}/gtk2/Makefile
+%{_libdir}/clisp-%{version}/gtk2/*.cfg
+%{_libdir}/clisp-%{version}/gtk2/*.glade
+%{_libdir}/clisp-%{version}/gtk2/*.lisp
+%{_libdir}/clisp-%{version}/gtk2/*.o
+%{_libdir}/clisp-%{version}/gtk2/*.sh
+%{_libdir}/clisp-%{version}/libsvm/Makefile
+%{_libdir}/clisp-%{version}/libsvm/*.lisp
+%{_libdir}/clisp-%{version}/libsvm/*.o
+%{_libdir}/clisp-%{version}/libsvm/*.sh
+%{_libdir}/clisp-%{version}/linkkit/
+%{_libdir}/clisp-%{version}/pari/README
+%{_libdir}/clisp-%{version}/pari/Makefile
+%{_libdir}/clisp-%{version}/pari/*.lisp
+%{_libdir}/clisp-%{version}/pari/*.o
+%{_libdir}/clisp-%{version}/pari/*.sh
+%{_libdir}/clisp-%{version}/pcre/Makefile
+%{_libdir}/clisp-%{version}/pcre/*.lisp
+%{_libdir}/clisp-%{version}/pcre/*.o
+%{_libdir}/clisp-%{version}/pcre/*.sh
+%{_libdir}/clisp-%{version}/postgresql/README
+%{_libdir}/clisp-%{version}/postgresql/Makefile
+%{_libdir}/clisp-%{version}/postgresql/*.lisp
+%{_libdir}/clisp-%{version}/postgresql/*.o
+%{_libdir}/clisp-%{version}/postgresql/*.sh
+%{_libdir}/clisp-%{version}/rawsock/demos/
+%{_libdir}/clisp-%{version}/rawsock/Makefile
+%{_libdir}/clisp-%{version}/rawsock/*.lisp
+%{_libdir}/clisp-%{version}/rawsock/*.o
+%{_libdir}/clisp-%{version}/rawsock/*.sh
+%{_libdir}/clisp-%{version}/wildcard/README
+%{_libdir}/clisp-%{version}/wildcard/Makefile
+%{_libdir}/clisp-%{version}/wildcard/*.a
+%{_libdir}/clisp-%{version}/wildcard/*.lisp
+%{_libdir}/clisp-%{version}/wildcard/*.o
+%{_libdir}/clisp-%{version}/wildcard/*.sh
+%{_libdir}/clisp-%{version}/zlib/Makefile
+%{_libdir}/clisp-%{version}/zlib/*.lisp
+%{_libdir}/clisp-%{version}/zlib/*.o
+%{_libdir}/clisp-%{version}/zlib/*.sh
 %{_datadir}/aclocal/clisp.m4
 
 
 %changelog
+* Sun Mar 18 2012 Daniel E. Wilson <danw@bureau-13.org> - 2.49-6
+- Changed build process to define the default browser.
+- Fixed module directories to move only *.fas files.
+- Moved build-aux directory to the development package.
+- Replaced the clisp-* wildcards with the correct version.
+- More stack space may be needed on all arches (Jerry James).
+
 * Sun Jan  8 2012 Jerry James <loganjerry@gmail.com> - 2.49-5
 - Rebuild for GCC 4.7
 - Minor spec file cleanups
