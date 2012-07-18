@@ -1,7 +1,7 @@
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
 Version:	2.49
-Release:	6%{?dist}
+Release:	7%{?dist}
 
 Group:		Development/Languages
 License:	GPLv2
@@ -282,6 +282,9 @@ chmod a+x \
 
 
 %changelog
+* Wed Jul 18 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.49-7
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
+
 * Sun Mar 18 2012 Daniel E. Wilson <danw@bureau-13.org> - 2.49-6
 - Changed build process to define the default browser.
 - Fixed module directories to move only *.fas files.
