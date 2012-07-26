@@ -1,18 +1,22 @@
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
 Version:	2.49
-Release:	7%{?dist}
+Release:	8%{?dist}
 
 Group:		Development/Languages
 License:	GPLv2
 URL:		http://www.clisp.org/
 Source0:	http://downloads.sourceforge.net/clisp/clisp-%{version}.tar.bz2
-# Adapt to libsvm 3.1.  Sent upstream 23 Jun 2011.
+# Adapt to libsvm 3.1.  Applied upstream.
 Patch0:		clisp-libsvm.patch
-# Fix an illegal C construct that allows GCC 4.7 to produce bad code.
+# Fix an illegal C construct that allows GCC 4.7 to produce bad code.  Applied
+# upstream.
 Patch1:		clisp-hostname.patch
+# Fix old ARM assembly that is invalid for newer platforms.  Sent upstream.
+Patch2:		clisp-arm.patch
+# Linux-specific fixes.  Sent upstream 25 Jul 2012.
+Patch3:		clisp-linux.patch
 BuildRequires:	compat-readline5-devel
-BuildRequires:	db4-devel
 BuildRequires:	dbus-devel
 BuildRequires:	fcgi-devel
 BuildRequires:	ffcall
@@ -21,7 +25,6 @@ BuildRequires:	gettext-devel
 BuildRequires:	ghostscript
 BuildRequires:	groff
 BuildRequires:	gtk2-devel
-BuildRequires:	gzip
 BuildRequires:	libICE-devel
 BuildRequires:	libSM-devel
 BuildRequires:	libX11-devel
@@ -31,10 +34,11 @@ BuildRequires:	libXft-devel
 BuildRequires:	libXmu-devel
 BuildRequires:	libXrender-devel
 BuildRequires:	libXt-devel
+BuildRequires:	libdb4-devel
 BuildRequires:	libglade2-devel
 BuildRequires:	libsigsegv-devel
 BuildRequires:	libsvm-devel
-BuildRequires:	pari-devel
+#BuildRequires:	pari-devel
 BuildRequires:	pcre-devel
 BuildRequires:	postgresql-devel
 BuildRequires:	zlib-devel
@@ -42,6 +46,9 @@ BuildRequires:	zlib-devel
 # See Red Hat bug #238954
 ExcludeArch:	ppc64
 
+# clisp contains a copy of gnulib, which has been granted a bundling exception:
+# https://fedoraproject.org/wiki/Packaging:No_Bundled_Libraries#Packages_granted_exceptions
+Provides:	bundled(gnulib)
 
 %description
 ANSI Common Lisp is a high-level, general-purpose programming
@@ -79,6 +86,8 @@ Files necessary for linking CLISP programs.
 %setup -q
 %patch0
 %patch1
+%patch2
+%patch3
 
 # Convince CLisp to build against compat-readline5 instead of readline.
 # This is to avoid pulling the GPLv3 readline 6 into a GPLv2 CLisp binary.
@@ -125,7 +134,6 @@ ulimit -s unlimited
 	    --with-module=gdbm \
 	    --with-module=gtk2 \
 	    --with-module=libsvm \
-	    --with-module=pari \
 	    --with-module=pcre \
 	    --with-module=postgresql \
 	    --with-module=rawsock \
@@ -135,11 +143,11 @@ ulimit -s unlimited
 	    --cbc \
 	    build \
 %ifarch ppc ppc64
-	    CFLAGS="${RPM_OPT_FLAGS} -DNO_GENERATIONAL_GC -DNO_MULTIMAP_FILE -DNO_SINGLEMAP -I/usr/include/readline5 -I/usr/include/libsvm -Wa,--noexecstack -L%{_libdir}/readline5" \
+	    CFLAGS="${RPM_OPT_FLAGS} -DNO_GENERATIONAL_GC -DNO_MULTIMAP_FILE -DNO_SINGLEMAP -I/usr/include/readline5 -I/usr/include/libsvm -I/usr/include/libdb4 -Wa,--noexecstack -L%{_libdir}/readline5 -L%{_libdir}/libdb4" \
 %else
-	    CFLAGS="${RPM_OPT_FLAGS} -I/usr/include/readline5 -I/usr/include/libsvm -Wa,--noexecstack -L%{_libdir}/readline5" \
+	    CFLAGS="${RPM_OPT_FLAGS} -I/usr/include/readline5 -I/usr/include/libsvm -I/usr/include/libdb4 -Wa,--noexecstack -L%{_libdir}/readline5 -L%{_libdir}/libdb4" \
 %endif
-	    LDFLAGS="-L%{_libdir}/readline5 -Wl,-z,noexecstack"
+	    LDFLAGS="-L%{_libdir}/readline5 -L%{_libdir}/libdb4 -Wl,-z,noexecstack"
 
 %install
 make -C build DESTDIR=$RPM_BUILD_ROOT install
@@ -188,8 +196,8 @@ chmod a+x \
 %{_libdir}/clisp-%{version}/gtk2/*.fas
 %dir %{_libdir}/clisp-%{version}/libsvm/
 %{_libdir}/clisp-%{version}/libsvm/*.fas
-%dir %{_libdir}/clisp-%{version}/pari/
-%{_libdir}/clisp-%{version}/pari/*.fas
+#%%dir %%{_libdir}/clisp-%%{version}/pari/
+#%%{_libdir}/clisp-%%{version}/pari/*.fas
 %dir %{_libdir}/clisp-%{version}/pcre/
 %{_libdir}/clisp-%{version}/pcre/*.fas
 %dir %{_libdir}/clisp-%{version}/postgresql/
@@ -249,11 +257,11 @@ chmod a+x \
 %{_libdir}/clisp-%{version}/libsvm/*.o
 %{_libdir}/clisp-%{version}/libsvm/*.sh
 %{_libdir}/clisp-%{version}/linkkit/
-%{_libdir}/clisp-%{version}/pari/README
-%{_libdir}/clisp-%{version}/pari/Makefile
-%{_libdir}/clisp-%{version}/pari/*.lisp
-%{_libdir}/clisp-%{version}/pari/*.o
-%{_libdir}/clisp-%{version}/pari/*.sh
+#%%{_libdir}/clisp-%%{version}/pari/README
+#%%{_libdir}/clisp-%%{version}/pari/Makefile
+#%%{_libdir}/clisp-%%{version}/pari/*.lisp
+#%%{_libdir}/clisp-%%{version}/pari/*.o
+#%%{_libdir}/clisp-%%{version}/pari/*.sh
 %{_libdir}/clisp-%{version}/pcre/Makefile
 %{_libdir}/clisp-%{version}/pcre/*.lisp
 %{_libdir}/clisp-%{version}/pcre/*.o
@@ -282,6 +290,12 @@ chmod a+x \
 
 
 %changelog
+* Wed Jul 25 2012 Jerry James <loganjerry@gmail.com> - 2.49-8
+- Fix build for new libdb4-devel package.
+- Fix ARM assembly (bz 812928)
+- Add gnulib Provides (bz 821747)
+- Disable the pari module for now; it does not compile against pari 2.5
+
 * Wed Jul 18 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.49-7
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
 
