@@ -1,7 +1,7 @@
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
 Version:	2.49
-Release:	8%{?dist}
+Release:	9%{?dist}
 
 Group:		Development/Languages
 License:	GPLv2
@@ -290,6 +290,9 @@ chmod a+x \
 
 
 %changelog
+* Wed Feb 13 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.49-9
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
+
 * Wed Jul 25 2012 Jerry James <loganjerry@gmail.com> - 2.49-8
 - Fix build for new libdb4-devel package.
 - Fix ARM assembly (bz 812928)
