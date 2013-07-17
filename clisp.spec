@@ -4,7 +4,7 @@
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
 Version:	2.49
-Release:	9.%{hgver}%{?dist}
+Release:	10.%{hgver}%{?dist}
 
 Group:		Development/Languages
 License:	GPLv2
@@ -313,6 +313,9 @@ chmod a+x \
 
 
 %changelog
+* Wed Jul 17 2013 Petr Pisar <ppisar@redhat.com> - 2.49-10.20130208hg
+- Perl 5.18 rebuild
+
 * Mon Feb 18 2013 Jerry James <loganjerry@gmail.com> - 2.49-9.20130208hg
 - Update to mercurial snapshot to fix FTBFS
 - Drop upstreamed -hostname patch
