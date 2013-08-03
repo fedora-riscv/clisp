@@ -854,3 +854,14 @@
  #endif
  
          END
+--- src/makemake.in.orig	2013-02-16 15:26:28.000000000 -0700
++++ src/makemake.in	2013-08-03 14:55:30.000000000 -0600
+@@ -1673,7 +1673,7 @@
+   ARI_ASMD=$ARI_ASMD' arihppa'
+   ARI_ASMS=$ARI_ASMS' arihppa'
+ fi
+-if [ "$cpu" = arm ] ; then
++if [ "$cpu" = arm -o "$cpu" = armel ] ; then
+   ARI_ASMD=$ARI_ASMD' ariarm'
+   ARI_ASMS=$ARI_ASMS' ariarm'
+ fi
