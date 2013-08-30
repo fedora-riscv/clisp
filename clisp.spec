@@ -4,7 +4,7 @@
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
 Version:	2.49
-Release:	11.%{hgver}%{?dist}
+Release:	12.%{hgver}%{?dist}
 
 Group:		Development/Languages
 License:	GPLv2
@@ -48,8 +48,8 @@ BuildRequires:	pcre-devel
 BuildRequires:	postgresql-devel
 BuildRequires:	zlib-devel
 
-# See Red Hat bug #238954
-ExcludeArch:	ppc64
+# See Red Hat bugs 238954 (ppc64) and 925155 (aarch64)
+ExcludeArch:	ppc64 aarch64
 
 Requires:	emacs-filesystem
 Requires:	vim-filesystem
@@ -140,7 +140,7 @@ ulimit -s unlimited
 	    --libdir=%{_libdir} \
 	    --mandir=%{_mandir} \
 	    --infodir=%{_infodir} \
-	    --docdir=%{_docdir}/clisp-%{version}+ \
+	    --docdir=%{_pkgdocdir} \
 	    --fsstnd=redhat \
 	    --hyperspec=http://www.lispworks.com/documentation/HyperSpec/ \
 	    --with-module=asdf \
@@ -169,11 +169,11 @@ ulimit -s unlimited
 
 %install
 make -C build DESTDIR=$RPM_BUILD_ROOT install
-rm -f $RPM_BUILD_ROOT%{_docdir}/clisp-%{version}+/doc/clisp.{dvi,1,ps}
-cp -p doc/mop-spec.pdf $RPM_BUILD_ROOT%{_docdir}/clisp-%{version}+/doc
-cp -p doc/*.png $RPM_BUILD_ROOT%{_docdir}/clisp-%{version}+/doc
-cp -p doc/Why-CLISP* $RPM_BUILD_ROOT%{_docdir}/clisp-%{version}+/doc
-cp -p doc/regexp.html $RPM_BUILD_ROOT%{_docdir}/clisp-%{version}+/doc
+rm -f $RPM_BUILD_ROOT%{_pkgdocdir}/doc/clisp.{dvi,1,ps}
+cp -p doc/mop-spec.pdf $RPM_BUILD_ROOT%{_pkgdocdir}/doc
+cp -p doc/*.png $RPM_BUILD_ROOT%{_pkgdocdir}/doc
+cp -p doc/Why-CLISP* $RPM_BUILD_ROOT%{_pkgdocdir}/doc
+cp -p doc/regexp.html $RPM_BUILD_ROOT%{_pkgdocdir}/doc
 find $RPM_BUILD_ROOT%{_libdir} -name '*.dvi' | xargs rm -f
 %find_lang %{name}
 %find_lang %{name}low
@@ -195,7 +195,7 @@ chmod a+x \
 %files -f %{name}.lang
 %{_bindir}/clisp
 %{_mandir}/man1/clisp.1*
-%{_docdir}/clisp-%{version}+
+%{_pkgdocdir}/
 %dir %{_libdir}/clisp-%{version}+/
 %dir %{_libdir}/clisp-%{version}+/asdf/
 %{_libdir}/clisp-%{version}+/asdf/asdf.fas
@@ -313,6 +313,10 @@ chmod a+x \
 
 
 %changelog
+* Fri Aug 30 2013 Jerry James <loganjerry@gmail.com> - 2.49-11.20130208hg
+- clisp does not support aarch64 (bz 925155)
+- Adapt to versionless docdir (bz 992605 and 993701)
+
 * Sat Aug 03 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.49-11.20130208hg
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
 
