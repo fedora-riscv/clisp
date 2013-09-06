@@ -168,6 +168,7 @@ ulimit -s unlimited
 	    LDFLAGS="${RPM_LD_FLAGS} -L%{_libdir}/readline5 -Wl,-z,noexecstack"
 
 %install
+ulimit -s unlimited
 make -C build DESTDIR=$RPM_BUILD_ROOT install
 rm -f $RPM_BUILD_ROOT%{_pkgdocdir}/doc/clisp.{dvi,1,ps}
 cp -p doc/mop-spec.pdf $RPM_BUILD_ROOT%{_pkgdocdir}/doc
@@ -316,6 +317,7 @@ chmod a+x \
 * Fri Aug 30 2013 Jerry James <loganjerry@gmail.com> - 2.49-11.20130208hg
 - clisp does not support aarch64 (bz 925155)
 - Adapt to versionless docdir (bz 992605 and 993701)
+- More stack space needed to install
 
 * Sat Aug 03 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.49-11.20130208hg
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
