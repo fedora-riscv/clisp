@@ -4,7 +4,7 @@
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
 Version:	2.49
-Release:	12.%{hgver}%{?dist}
+Release:	13.%{hgver}%{?dist}
 
 Group:		Development/Languages
 License:	GPLv2
@@ -314,6 +314,9 @@ chmod a+x \
 
 
 %changelog
+* Sat Jun 07 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.49-13.20130208hg
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
+
 * Fri Aug 30 2013 Jerry James <loganjerry@gmail.com> - 2.49-11.20130208hg
 - clisp does not support aarch64 (bz 925155)
 - Adapt to versionless docdir (bz 992605 and 993701)
