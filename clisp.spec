@@ -4,7 +4,7 @@
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
 Version:	2.49
-Release:	13.%{hgver}%{?dist}
+Release:	14.%{hgver}%{?dist}
 
 Group:		Development/Languages
 License:	GPLv2
@@ -314,6 +314,9 @@ chmod a+x \
 
 
 %changelog
+* Sat Aug 16 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.49-14.20130208hg
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
+
 * Sat Jun 07 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.49-13.20130208hg
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
 
