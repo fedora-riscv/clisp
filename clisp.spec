@@ -4,7 +4,7 @@
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
 Version:	2.49
-Release:	14.%{hgver}%{?dist}
+Release:	15.%{hgver}%{?dist}
 
 Group:		Development/Languages
 License:	GPLv2
@@ -171,6 +171,7 @@ ulimit -s unlimited
 ulimit -s unlimited
 make -C build DESTDIR=$RPM_BUILD_ROOT install
 rm -f $RPM_BUILD_ROOT%{_pkgdocdir}/doc/clisp.{dvi,1,ps}
+rm -f $RPM_BUILD_ROOT%{_pkgdocdir}/{COPYRIGHT,GNU-GPL}
 cp -p doc/mop-spec.pdf $RPM_BUILD_ROOT%{_pkgdocdir}/doc
 cp -p doc/*.png $RPM_BUILD_ROOT%{_pkgdocdir}/doc
 cp -p doc/Why-CLISP* $RPM_BUILD_ROOT%{_pkgdocdir}/doc
@@ -194,6 +195,7 @@ chmod a+x \
   $RPM_BUILD_ROOT/%{_libdir}/clisp-%{version}+/build-aux/install-sh \
 
 %files -f %{name}.lang
+%license COPYRIGHT GNU-GPL
 %{_bindir}/clisp
 %{_mandir}/man1/clisp.1*
 %{_pkgdocdir}/
@@ -314,6 +316,9 @@ chmod a+x \
 
 
 %changelog
+* Wed Feb 11 2015 Jerry James <loganjerry@gmail.com> - 2.49-15.20130208hg
+- Use license macro
+
 * Sat Aug 16 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.49-14.20130208hg
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
 
