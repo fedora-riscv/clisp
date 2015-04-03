@@ -4,7 +4,7 @@
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
 Version:	2.49
-Release:	15.%{hgver}%{?dist}
+Release:	16.%{hgver}%{?dist}
 
 Group:		Development/Languages
 License:	GPLv2
@@ -123,6 +123,9 @@ done
 # place of -Wl,-rpath -Wl,dir
 cp -p src/build-aux/config.rpath config.rpath.orig
 sed -i -e 's/${wl}-rpath ${wl}/-L/g' src/build-aux/config.rpath
+
+# Fix modules that need access to symbols in libgnu.a
+sed -i 's/\(${GLLIB_A}\) \(${LIBS}\)/-Wl,--whole-archive \1 -Wl,--no-whole-archive \2/' src/makemake.in
 
 # Enable firefox to be the default browser for displaying documentation
 sed -i 's/;; \((setq \*browser\* .*)\)/\1/' src/cfgunix.lisp
@@ -319,6 +322,9 @@ chmod a+x \
 
 
 %changelog
+* Fri Apr  3 2015 Jerry James <loganjerry@gmail.com> - 2.49-16.20130208hg
+- Fix modules that need access to symbols in libgnu.a
+
 * Wed Feb 11 2015 Jerry James <loganjerry@gmail.com> - 2.49-15.20130208hg
 - Add -gcc5 patch to fix 32-bit build with gcc 5.0
 - Use license macro
