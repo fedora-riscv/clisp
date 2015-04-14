@@ -171,7 +171,7 @@ ulimit -s unlimited
 	    CPPFLAGS="-I/usr/include/readline5 -I/usr/include/libsvm" \
 %endif
 	    CFLAGS="${RPM_OPT_FLAGS} -Wa,--noexecstack -L%{_libdir}/readline5" \
-	    LDFLAGS="${RPM_LD_FLAGS} -L%{_libdir}/readline5 -Wl,-z,noexecstack"
+	    LDFLAGS="-Wl,-z,relro -L%{_libdir}/readline5 -Wl,-z,noexecstack"
 
 %install
 ulimit -s unlimited
@@ -199,6 +199,9 @@ chmod a+x \
   $RPM_BUILD_ROOT/%{_libdir}/clisp-%{version}+/build-aux/config.sub \
   $RPM_BUILD_ROOT/%{_libdir}/clisp-%{version}+/build-aux/depcomp \
   $RPM_BUILD_ROOT/%{_libdir}/clisp-%{version}+/build-aux/install-sh \
+
+# Help the debuginfo generator
+ln -s ../../src/modules.c build/base/modules.c
 
 %files -f %{name}.lang
 %license COPYRIGHT GNU-GPL
