@@ -4,7 +4,7 @@
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
 Version:	2.49
-Release:	16.%{hgver}%{?dist}
+Release:	17.%{hgver}%{?dist}
 
 Group:		Development/Languages
 License:	GPLv2
@@ -325,6 +325,9 @@ ln -s ../../src/modules.c build/base/modules.c
 
 
 %changelog
+* Wed Jun 17 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.49-17.20130208hg
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
+
 * Fri Apr  3 2015 Jerry James <loganjerry@gmail.com> - 2.49-16.20130208hg
 - Fix modules that need access to symbols in libgnu.a
 
