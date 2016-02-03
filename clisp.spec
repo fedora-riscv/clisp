@@ -4,7 +4,7 @@
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
 Version:	2.49
-Release:	18.%{hgver}%{?dist}
+Release:	19.%{hgver}%{?dist}
 
 Group:		Development/Languages
 License:	GPLv2
@@ -414,6 +414,9 @@ ln -s ../../src/modules.c build/full/modules.c
 
 
 %changelog
+* Wed Feb 03 2016 Fedora Release Engineering <releng@fedoraproject.org> - 2.49-19.20130208hg
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
+
 * Tue Sep 29 2015 Jerry James <loganjerry@gmail.com> - 2.49-18.20130208hg
 - Install the full link set
 - Fix installed Makefile paths
