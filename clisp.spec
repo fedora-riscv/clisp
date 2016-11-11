@@ -1,21 +1,19 @@
 # Mercurial snapshot
-%global hgver 20130208hg
+%global hgver 20161111hg
 
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
 Version:	2.49
-Release:	19.%{hgver}%{?dist}
+Release:	20.%{hgver}%{?dist}
 
-Group:		Development/Languages
 License:	GPLv2
 URL:		http://www.clisp.org/
 # The source for this package was pulled from upstream's mercurial repository.
 # Use the following commands to generate the tarball:
-#   hg clone -u 6c160a19948d \
-#     http://clisp.hg.sourceforge.net:8000/hgroot/clisp/clisp clisp-2.49
+#   hg clone -u 7f50c9d7b9ac http://hg.code.sf.net/p/clisp/clisp clisp-2.49
 #   rm -fr clisp-2.49/.hg*
-#   tar cvjf clisp-2.49-20130208hg.tar.bz2 clisp-2.49
-Source0:	%{name}-%{version}-%{hgver}.tar.bz2   
+#   tar cvJf clisp-2.49-20161111hg.tar.xz clisp-2.49
+Source0:	%{name}-%{version}-%{hgver}.tar.xz
 #Source0:	http://downloads.sourceforge.net/clisp/%%{name}-%%{version}.tar.bz2
 # http://sourceforge.net/tracker/?func=detail&aid=3529607&group_id=1355&atid=301355
 Patch0:		%{name}-format.patch
@@ -27,13 +25,13 @@ Patch2:		%{name}-libsvm.patch
 Patch3:		%{name}-db.patch
 # Linux-specific fixes.  Sent upstream 25 Jul 2012.
 Patch4:		%{name}-linux.patch
-# Adapt to GCC 5.x
-Patch5:		%{name}-gcc5.patch
+
 BuildRequires:	compat-readline5-devel
 BuildRequires:	dbus-devel
-BuildRequires:  emacs
+BuildRequires:	emacs
 BuildRequires:	fcgi-devel
 BuildRequires:	ffcall
+BuildRequires:	gcc
 BuildRequires:	gdbm-devel
 BuildRequires:	gettext-devel
 BuildRequires:	ghostscript
@@ -84,7 +82,6 @@ Maxima, ACL2 and many other Common Lisp packages.
 
 %package devel
 Summary:	Development files for CLISP
-Group:		Development/Languages
 Provides:	%{name}-static = %{version}-%{release} 
 Requires:	%{name}%{?_isa} = %{version}-%{release}
 Requires:	libsigsegv-devel%{?_isa}
@@ -100,7 +97,6 @@ Files necessary for linking CLISP programs.
 %patch2
 %patch3
 %patch4
-%patch5
 
 # Convince CLisp to build against compat-readline5 instead of readline.
 # This is to avoid pulling the GPLv3 readline 6 into a GPLv2 CLisp binary.
@@ -108,6 +104,9 @@ Files necessary for linking CLISP programs.
 mkdir -p readline/include
 ln -s %{_includedir}/readline5/readline readline/include/readline
 ln -s %{_libdir}/readline5 readline/%{_lib}
+
+# Update config.guess and config.sub
+cp -p /usr/lib/rpm/redhat/config.{guess,sub} src/build-aux
 
 # Change URLs not affected by the --hyperspec argument to configure
 sed -i.orig 's|lisp.org/HyperSpec/Body/chap-7.html|lispworks.com/documentation/HyperSpec/Body/07_.htm|' \
@@ -414,6 +413,12 @@ ln -s ../../src/modules.c build/full/modules.c
 
 
 %changelog
+* Fri Nov 11 2016 Jerry James <loganjerry@gmail.com> - 2.49-20.20161111hg
+- Update to latest mercurial snapshot (bz 1392563)
+- Drop upstreamed -gcc5 patch
+- Rebase all other patches
+- Update config.guess and config.sub
+
 * Wed Feb 03 2016 Fedora Release Engineering <releng@fedoraproject.org> - 2.49-19.20130208hg
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
 
