@@ -1,18 +1,18 @@
 # Mercurial snapshot
-%global hgver 20161111hg
+%global hgver 20161113hg
 
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
 Version:	2.49
-Release:	20.%{hgver}%{?dist}
+Release:	21.%{hgver}%{?dist}
 
 License:	GPLv2
 URL:		http://www.clisp.org/
 # The source for this package was pulled from upstream's mercurial repository.
 # Use the following commands to generate the tarball:
-#   hg clone -u 7f50c9d7b9ac http://hg.code.sf.net/p/clisp/clisp clisp-2.49
+#   hg clone -u 536a48a91754 http://hg.code.sf.net/p/clisp/clisp clisp-2.49
 #   rm -fr clisp-2.49/.hg*
-#   tar cvJf clisp-2.49-20161111hg.tar.xz clisp-2.49
+#   tar cvJf clisp-2.49-20161113hg.tar.xz clisp-2.49
 Source0:	%{name}-%{version}-%{hgver}.tar.xz
 #Source0:	http://downloads.sourceforge.net/clisp/%%{name}-%%{version}.tar.bz2
 # http://sourceforge.net/tracker/?func=detail&aid=3529607&group_id=1355&atid=301355
@@ -34,7 +34,7 @@ BuildRequires:	ffcall
 BuildRequires:	gcc
 BuildRequires:	gdbm-devel
 BuildRequires:	gettext-devel
-BuildRequires:	ghostscript
+BuildRequires:	ghostscript-core
 BuildRequires:	groff
 BuildRequires:	gtk2-devel
 BuildRequires:	libXaw-devel
@@ -413,6 +413,9 @@ ln -s ../../src/modules.c build/full/modules.c
 
 
 %changelog
+* Sat Jan 28 2017 Jerry James <loganjerry@gmail.com> - 2.49-21.20161113hg
+- Update to latest mercurial snapshot
+
 * Fri Nov 11 2016 Jerry James <loganjerry@gmail.com> - 2.49-20.20161111hg
 - Update to latest mercurial snapshot (bz 1392563)
 - Drop upstreamed -gcc5 patch

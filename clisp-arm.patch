@@ -1,5 +1,5 @@
---- src/ariarm.d.orig	2016-11-11 08:56:50.449685288 -0700
-+++ src/ariarm.d	2016-11-11 09:04:26.686805266 -0700
+--- src/ariarm.d.orig	2017-01-28 11:49:37.957965080 -0700
++++ src/ariarm.d	2017-01-28 11:54:14.913643784 -0700
 @@ -86,7 +86,7 @@ pc      .req    r15
  
  #define C(x) x
@@ -854,9 +854,9 @@
  #endif
  
          END
---- src/makemake.in.orig	2016-11-11 08:56:50.424687309 -0700
-+++ src/makemake.in	2016-11-11 09:04:26.688805105 -0700
-@@ -1677,7 +1677,7 @@ if [ "$cpu" = hppa ] ; then
+--- src/makemake.in.orig	2017-01-28 11:49:37.905965491 -0700
++++ src/makemake.in	2017-01-28 11:54:14.914643775 -0700
+@@ -1602,7 +1602,7 @@ if [ "$cpu" = hppa ] ; then
    ARI_ASMD=$ARI_ASMD' arihppa'
    ARI_ASMS=$ARI_ASMS' arihppa'
  fi
