@@ -25,6 +25,8 @@ Patch2:		%{name}-libsvm.patch
 Patch3:		%{name}-db.patch
 # Linux-specific fixes.  Sent upstream 25 Jul 2012.
 Patch4:		%{name}-linux.patch
+# Fix for 32-bit compilation.  Sent upstream 28 Jan 2017.
+Patch5:         %{name}-32bit.patch
 
 BuildRequires:	compat-readline5-devel
 BuildRequires:	dbus-devel
@@ -97,6 +99,7 @@ Files necessary for linking CLISP programs.
 %patch2
 %patch3
 %patch4
+%patch5
 
 # Convince CLisp to build against compat-readline5 instead of readline.
 # This is to avoid pulling the GPLv3 readline 6 into a GPLv2 CLisp binary.
