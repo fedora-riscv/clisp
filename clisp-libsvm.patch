@@ -1,5 +1,5 @@
---- modules/libsvm/libsvm.lisp.orig	2016-11-11 08:56:50.341694018 -0700
-+++ modules/libsvm/libsvm.lisp	2016-11-11 09:05:19.341553889 -0700
+--- modules/libsvm/libsvm.lisp.orig	2017-02-24 10:37:24.000000000 -0700
++++ modules/libsvm/libsvm.lisp	2017-02-24 10:42:20.857324755 -0700
 @@ -31,7 +31,7 @@
  (c-lines "
  #if !defined(HAVE_SVM_DESTROY_MODEL)

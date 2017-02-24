@@ -1,5 +1,5 @@
 # Mercurial snapshot
-%global hgver 20161113hg
+%global hgver 20170224hg
 
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
@@ -10,9 +10,9 @@ License:	GPLv2
 URL:		http://www.clisp.org/
 # The source for this package was pulled from upstream's mercurial repository.
 # Use the following commands to generate the tarball:
-#   hg clone -u 536a48a91754 http://hg.code.sf.net/p/clisp/clisp clisp-2.49
+#   hg clone -u cf1453aed337 http://hg.code.sf.net/p/clisp/clisp clisp-2.49
 #   rm -fr clisp-2.49/.hg*
-#   tar cvJf clisp-2.49-20161113hg.tar.xz clisp-2.49
+#   tar cvJf clisp-2.49-20170224hg.tar.xz clisp-2.49
 Source0:	%{name}-%{version}-%{hgver}.tar.xz
 #Source0:	http://downloads.sourceforge.net/clisp/%%{name}-%%{version}.tar.bz2
 # http://sourceforge.net/tracker/?func=detail&aid=3529607&group_id=1355&atid=301355
@@ -25,8 +25,12 @@ Patch2:		%{name}-libsvm.patch
 Patch3:		%{name}-db.patch
 # Linux-specific fixes.  Sent upstream 25 Jul 2012.
 Patch4:		%{name}-linux.patch
-# Fix for 32-bit compilation.  Sent upstream 28 Jan 2017.
-Patch5:         %{name}-32bit.patch
+# Add missing volatile keywords.
+Patch5:		%{name}-volatile.patch
+# Left shift of a signed value invokes undefined behabvior.
+Patch6:		%{name}-negshift.patch
+# Fix an aliasing issue, causes a build failure on ARM.
+Patch7:		%{name}-alias.patch
 
 BuildRequires:	compat-readline5-devel
 BuildRequires:	dbus-devel
@@ -100,6 +104,8 @@ Files necessary for linking CLISP programs.
 %patch3
 %patch4
 %patch5
+%patch6
+%patch7
 
 # Convince CLisp to build against compat-readline5 instead of readline.
 # This is to avoid pulling the GPLv3 readline 6 into a GPLv2 CLisp binary.
@@ -416,6 +422,11 @@ ln -s ../../src/modules.c build/full/modules.c
 
 
 %changelog
+* Fri Feb 24 2017 Jerry James <loganjerry@gmail.com> - 2.49-22.20170224hg
+- Update to latest mercurial snapshot
+- Drop upstreamed -32bit patch
+- Add -volatile, -negshift, and -alias patches
+
 * Fri Feb 10 2017 Fedora Release Engineering <releng@fedoraproject.org> - 2.49-22.20161113hg
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
 

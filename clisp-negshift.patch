@@ -1,0 +1,121 @@
+--- src/aridecl.d.orig	2017-02-24 10:37:24.000000000 -0700
++++ src/aridecl.d	2017-02-24 10:43:07.072929454 -0700
+@@ -163,9 +163,9 @@
+ /* Creates a single float from sign (0 or -1), exponent and mantissa: */
+   #define make_FF(sign,exp,mant)  \
+     type_data_object(FF_type | (bit(vorz_bit_t) & (sign)),      \
+-      (ffloat)((sign) << (FF_exp_len+FF_mant_len)               \
+-               | (((exp) & (bit(FF_exp_len)-1)) << FF_mant_len) \
+-               | ((mant) & (bit(FF_mant_len)-1))))
++      (ffloat)(((unsigned int)(sign)) << (FF_exp_len+FF_mant_len) \
++               | ((((unsigned int)exp) & (bit(FF_exp_len)-1)) << FF_mant_len) \
++               | (((unsigned int)mant) & (bit(FF_mant_len)-1))))
+ /* Single Float 0.0 : */
+   #define FF_0  make_FF(0,0,0)
+ /* Single Float 1.0 : */
+--- src/lispbibl.d.orig	2017-02-24 10:42:57.481011497 -0700
++++ src/lispbibl.d	2017-02-24 10:43:07.078929402 -0700
+@@ -1203,9 +1203,9 @@ typedef signed int  signean;
+   #endif
+ #endif
+ /* Minus bit number n (0<=n<32) */
+-#define minus_bit(n)  (-1L<<(n))
++#define minus_bit(n)  ((long)(((unsigned long)-1L)<<(n)))
+ /* Minus bit number n (0<n<=32) mod 2^32 */
+-#define minus_bitm(n)  (-2L<<((n)-1))
++#define minus_bitm(n)  ((long)(((unsigned long)-2L)<<((n)-1)))
+ %% export_def(bit(n));
+ %% #if notused
+ %% export_def(bitm(n));
+@@ -3029,7 +3029,7 @@ typedef signed_int_with_n_bits(intVsize)
+   #define vbit(n)  (LL(1)<<(n))
+   #define vbitm(n)  (LL(2)<<((n)-1))
+   #define vbit_test(x,n)  ((x) & vbit(n))
+-  #define minus_vbit(n)  (-LL(1)<<(n))
++  #define minus_vbit(n)  ((long long)(((unsigned long long)-LL(1))<<(n)))
+ #else
+   #define vbit  bit
+   #define vbitm  bitm
+@@ -5363,7 +5363,7 @@ typedef unsigned_int_with_n_bits(char_in
+  > delta: a constant
+  < result: incremented fixnum */
+ #define fixnum_inc(obj,delta)                                           \
+-    objectplus(obj, (soint)(delta) << oint_data_shift)
++    objectplus(obj, (oint)(delta) << oint_data_shift)
+ %% export_def(fixnum_inc(obj,delta));
+ 
+ /* posfixnum(x) is a fixnum with value x>=0. */
+--- src/spvw_gcmark.d.orig	2017-02-24 10:37:24.000000000 -0700
++++ src/spvw_gcmark.d	2017-02-24 10:43:07.078929402 -0700
+@@ -43,7 +43,7 @@ local void gc_mark (object obj)
+     goto down; /* and descent */                                        \
+   }
+ #define up_varobject(first_offset)                                      \
+-  { curr = objectplus(pred,-(soint)(first_offset)<<(oint_addr_shift-addr_shift)); /* becomes current object */ \
++  { curr = objectplus(pred,((oint)-(soint)(first_offset))<<(oint_addr_shift-addr_shift)); /* becomes current object */ \
+     pred = prepred; goto up; /* go further up */                        \
+   }
+ #define down_nopointers(The)                    \
+@@ -68,7 +68,7 @@ local void gc_mark (object obj)
+     goto down; /* and descent */                                        \
+   }
+ #define up_iarray()                                                     \
+-  { curr = objectplus(pred,-(soint)iarray_data_offset<<(oint_addr_shift-addr_shift)); /* array becomes current object */ \
++  { curr = objectplus(pred,((oint)-(soint)iarray_data_offset)<<(oint_addr_shift-addr_shift)); /* array becomes current object */ \
+     pred = prepred; goto up; /* go further up */                        \
+   }
+ #define down_sistring()                                                 \
+@@ -88,7 +88,7 @@ local void gc_mark (object obj)
+     goto down; /* and descent */                                        \
+   }
+ #define up_sistring()                                                   \
+-  { curr = objectplus(pred,-(soint)sistring_data_offset<<(oint_addr_shift-addr_shift)); /* array becomes current object */ \
++  { curr = objectplus(pred,((oint)-(soint)sistring_data_offset)<<(oint_addr_shift-addr_shift)); /* array becomes current object */ \
+     pred = prepred; goto up; /* go further up */                        \
+   }
+ #define down_svector()                                                  \
+@@ -114,7 +114,7 @@ local void gc_mark (object obj)
+     goto down; /* and descent */                                        \
+   }}
+ #define up_svector()                            \
+-  { curr = objectplus(pred,-(soint)offsetofa(svector_,data)<<(oint_addr_shift-addr_shift)); /* Svector becomes current object */ \
++  { curr = objectplus(pred,((oint)-(soint)offsetofa(svector_,data))<<(oint_addr_shift-addr_shift)); /* Svector becomes current object */ \
+     pred = prepred; goto up; /* go further up */ \
+   }
+ #define down_lrecord()                                                  \
+@@ -140,7 +140,7 @@ local void gc_mark (object obj)
+     goto down; /* and descent */                                        \
+   }}
+ #define up_lrecord()                             \
+-  { curr = objectplus(pred,-(soint)offsetofa(record_,recdata)<<(oint_addr_shift-addr_shift)); /* Lrecord becomes current object */ \
++  { curr = objectplus(pred,((oint)-(soint)offsetofa(record_,recdata))<<(oint_addr_shift-addr_shift)); /* Lrecord becomes current object */ \
+     pred = prepred; goto up; /* go further up */ \
+   }
+ #define down_sxrecord()                                                 \
+@@ -177,7 +177,7 @@ local void gc_mark (object obj)
+  #define down_cclosure()
+ #endif
+ #define up_sxrecord()                             \
+-  { curr = objectplus(pred,-(soint)offsetofa(record_,recdata)<<(oint_addr_shift-addr_shift)); /* record becomes current object */ \
++  { curr = objectplus(pred,((oint)-(soint)offsetofa(record_,recdata))<<(oint_addr_shift-addr_shift)); /* record becomes current object */ \
+     pred = prepred; goto up; /* go further up */  \
+   }
+ #ifdef STANDARD_HEAPCODES
+@@ -348,7 +348,7 @@ local void gc_mark (object obj)
+        curr = currently marked  object, store in *pred */
+     var object prepred = *(gcv_object_t*)ThePointer(pred); /* old predecessor */
+     *(gcv_object_t*)ThePointer(pred) = curr; /* write back component */
+-    pred = objectplus(pred,-(soint)(sizeof(gcv_object_t))<<(oint_addr_shift-addr_shift)); /* go to next component */
++    pred = objectplus(pred,((oint)-(soint)sizeof(gcv_object_t))<<(oint_addr_shift-addr_shift)); /* go to next component */
+     if (marked(ThePointer(pred))) { /* already marked? */
+       curr = /* next component, without mark */
+         without_mark_bit(*(gcv_object_t*)ThePointer(pred));
+@@ -383,7 +383,7 @@ local void gc_mark (object obj)
+       case_subr: /* SUBR */
+         up_sxrecord();
+       case_sstring: /* simple-string */
+-        { var object pred_ = objectplus(pred,-(soint)sistring_data_offset<<(oint_addr_shift-addr_shift));
++        { var object pred_ = objectplus(pred,((oint)-(soint)sistring_data_offset)<<(oint_addr_shift-addr_shift));
+           if (sstring_reallocatedp(TheSstring(pred_)))
+             up_sistring();
+         }

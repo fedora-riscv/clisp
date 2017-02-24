@@ -1,5 +1,5 @@
---- src/errunix.d.orig	2017-01-28 11:49:37.885965649 -0700
-+++ src/errunix.d	2017-01-28 11:53:49.848854498 -0700
+--- src/errunix.d.orig	2017-02-24 10:37:24.000000000 -0700
++++ src/errunix.d	2017-02-24 10:41:33.217732236 -0700
 @@ -94,7 +94,7 @@ global _Noreturn void OS_error_arg (obje
   > FILE: Filename (with quotation marks) as constant ASCIZ-String
   > LINE: line number */
@@ -9,9 +9,9 @@
    var object code = ANSIC_error_code_converter(errorcode);
    if (symbolp(code)) { /* known name? */
      fputs(" (",stderr);
---- src/lispbibl.d.orig	2017-01-28 11:49:38.039964433 -0700
-+++ src/lispbibl.d	2017-01-28 11:53:49.864854363 -0700
-@@ -1012,7 +1012,7 @@
+--- src/lispbibl.d.orig	2017-02-24 10:37:24.000000000 -0700
++++ src/lispbibl.d	2017-02-24 10:41:33.223732185 -0700
+@@ -1013,7 +1013,7 @@
    #endif
    typedef unsigned char  UBYTE;
  #else
@@ -20,7 +20,7 @@
  #endif
  #if (short_bitsize==16)
    typedef short          SWORD;
-@@ -1023,26 +1023,36 @@
+@@ -1024,26 +1024,36 @@
  #if (long_bitsize==32)
    typedef long           SLONG;
    typedef unsigned long  ULONG;
@@ -57,7 +57,7 @@
   #else /* useless type */
    #undef HAVE_LONG_LONG_INT
   #endif
-@@ -1684,10 +1694,14 @@ typedef unsigned_int_with_n_bits(intBWLs
+@@ -1685,10 +1695,14 @@ typedef unsigned_int_with_n_bits(intBWLs
  #if (intCsize==intWsize)
    #define dotimesC dotimesW
    #define dotimespC dotimespW
@@ -72,8 +72,8 @@
  #endif
  /* Use 'uintC' for counters, which are small most of the time. */
  %% export_def(uintC);
---- src/spvw_debug.d.orig	2017-01-28 11:49:37.970964978 -0700
-+++ src/spvw_debug.d	2017-01-28 11:53:49.866854346 -0700
+--- src/spvw_debug.d.orig	2017-02-24 10:37:24.000000000 -0700
++++ src/spvw_debug.d	2017-02-24 10:41:33.224732176 -0700
 @@ -81,7 +81,7 @@ local void nobject_out1 (FILE* out, obje
      fputc('"',out);
    } else if (charp(obj)) {
@@ -132,8 +132,8 @@
              STACK_item_count(top_of_back_trace_frame(bt),
                               top_of_back_trace_frame(bt->bt_next)),
              (((long)((char*)(bt->bt_next) - (char*)bt) ^ SPoffset) - SPoffset)
---- src/spvw_memfile.d.orig	2017-01-28 11:49:38.051964338 -0700
-+++ src/spvw_memfile.d	2017-01-28 11:53:49.867854338 -0700
+--- src/spvw_memfile.d.orig	2017-02-24 10:37:24.000000000 -0700
++++ src/spvw_memfile.d	2017-02-24 10:41:33.225732167 -0700
 @@ -1817,7 +1817,7 @@ local void loadmem_from_handle (Handle h
                (uintL)posfixnum_to_V(header._dumptime.seconds));
      #endif

@@ -1,6 +1,6 @@
---- modules/berkeley-db/configure.orig	2017-01-28 11:49:37.845965965 -0700
-+++ modules/berkeley-db/configure	2017-01-28 11:54:31.794501872 -0700
-@@ -5214,7 +5214,7 @@ if ${ac_cv_dbe_set_errcall_accept_dbe+:}
+--- modules/berkeley-db/configure.orig	2017-02-24 10:37:24.000000000 -0700
++++ modules/berkeley-db/configure	2017-02-24 10:42:31.636232558 -0700
+@@ -5297,7 +5297,7 @@ if ${ac_cv_dbe_set_errcall_accept_dbe+:}
  else
  
  CFLAGS_save="$CFLAGS"
@@ -9,8 +9,8 @@
  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
  /* end confdefs.h.  */
  #include <db.h>
---- modules/berkeley-db/configure.in.orig	2017-01-28 11:49:37.847965949 -0700
-+++ modules/berkeley-db/configure.in	2017-01-28 11:54:31.792501889 -0700
+--- modules/berkeley-db/configure.in.orig	2017-02-24 10:37:24.000000000 -0700
++++ modules/berkeley-db/configure.in	2017-02-24 10:42:31.636232558 -0700
 @@ -48,7 +48,7 @@ dnl <http://www.sleepycat.com/docs/ref/u
  AC_CACHE_CHECK([whether DB_ENV->set_errcall() accepts DBE],
  ac_cv_dbe_set_errcall_accept_dbe,[
