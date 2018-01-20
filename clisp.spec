@@ -40,7 +40,7 @@ BuildRequires:	ffcall
 BuildRequires:	gcc
 BuildRequires:	gdbm-devel
 BuildRequires:	gettext-devel
-BuildRequires:	ghostscript-core
+BuildRequires:	ghostscript
 BuildRequires:	groff
 BuildRequires:	gtk2-devel
 BuildRequires:	libXaw-devel
