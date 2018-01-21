@@ -4,7 +4,7 @@
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
 Version:	2.49
-Release:	25.%{hgver}%{?dist}
+Release:	26.%{hgver}%{?dist}
 
 License:	GPLv2
 URL:		http://www.clisp.org/
@@ -36,7 +36,7 @@ BuildRequires:	compat-readline5-devel
 BuildRequires:	dbus-devel
 BuildRequires:	emacs
 BuildRequires:	fcgi-devel
-BuildRequires:	ffcall
+BuildRequires:	ffcall-devel
 BuildRequires:	gcc
 BuildRequires:	gdbm-devel
 BuildRequires:	gettext-devel
@@ -174,6 +174,7 @@ ulimit -s unlimited
 	    --with-module=rawsock \
 	    --with-module=zlib \
 	    --with-libreadline-prefix=$PWD/readline \
+	    --with-ffcall \
 	    --cbc \
 	    build \
 %ifarch ppc %{power64}
@@ -422,6 +423,9 @@ ln -s ../../src/modules.c build/full/modules.c
 
 
 %changelog
+* Sun Jan 21 2018 Björn Esser <besser82@fedoraproject.org> - 2.49-26.20170224hg
+- Explicitly BR: ffcall-devel and configure --with-ffcall
+
 * Sat Jan 20 2018 Björn Esser <besser82@fedoraproject.org> - 2.49-25.20170224hg
 - Rebuilt for switch to libxcrypt
 
