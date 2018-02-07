@@ -4,7 +4,7 @@
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
 Version:	2.49
-Release:	26.%{hgver}%{?dist}
+Release:	27.%{hgver}%{?dist}
 
 License:	GPLv2
 URL:		http://www.clisp.org/
@@ -423,6 +423,9 @@ ln -s ../../src/modules.c build/full/modules.c
 
 
 %changelog
+* Wed Feb 07 2018 Fedora Release Engineering <releng@fedoraproject.org> - 2.49-27.20170224hg
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
+
 * Sun Jan 21 2018 Björn Esser <besser82@fedoraproject.org> - 2.49-26.20170224hg
 - Explicitly BR: ffcall-devel and configure --with-ffcall
 
