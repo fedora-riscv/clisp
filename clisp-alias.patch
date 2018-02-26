@@ -1,11 +1,12 @@
---- src/record.d.orig	2017-02-24 10:42:57.482011489 -0700
-+++ src/record.d	2017-02-24 10:52:21.862184109 -0700
-@@ -1540,7 +1540,7 @@ global maygc object update_instance (obj
-       ptr->inst_class_version = obj;
-       clr_break_sem_1(); /* permit interrupts again */
-     }
--    ASSERT(Record_flags(STACK_(2+4+2*kept_slots)) & instflags_forwarded_B);
-+    ASSERT(record_flags(TheInstance(STACK_(2+4+2*kept_slots))) & instflags_forwarded_B);
-     dotimesL(kept_slots,kept_slots, {
-       var object new_slotinfo = popSTACK();
-       ASSERT(atomp(new_slotinfo));
+diff -up clisp-2.49.93/src/record.d.alias clisp-2.49.93/src/record.d
+--- clisp-2.49.93/src/record.d.alias	2018-02-26 11:40:53.668845947 -0500
++++ clisp-2.49.93/src/record.d	2018-02-26 11:41:22.225164509 -0500
+@@ -1539,7 +1539,7 @@ global maygc object update_instance (obj
+         ptr->inst_class_version = obj;
+         clr_break_sem_1(); /* permit interrupts again */
+       }
+-      ASSERT(Record_flags(STACK_(2+4+2*kept_slots)) & instflags_forwarded_B);
++      ASSERT(record_flags(TheInstance(STACK_(2+4+2*kept_slots))) & instflags_forwarded_B);
+       dotimesL(kept_slots,kept_slots, {
+         var object new_slotinfo = popSTACK();
+         ASSERT(atomp(new_slotinfo));

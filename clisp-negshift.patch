@@ -1,5 +1,6 @@
---- src/aridecl.d.orig	2017-02-24 10:37:24.000000000 -0700
-+++ src/aridecl.d	2017-02-24 10:43:07.072929454 -0700
+diff -up clisp-2.49.93/src/aridecl.d.negshift clisp-2.49.93/src/aridecl.d
+--- clisp-2.49.93/src/aridecl.d.negshift	2018-02-26 11:22:55.000000000 -0500
++++ clisp-2.49.93/src/aridecl.d	2018-02-26 11:37:34.006610477 -0500
 @@ -163,9 +163,9 @@
  /* Creates a single float from sign (0 or -1), exponent and mantissa: */
    #define make_FF(sign,exp,mant)  \
@@ -13,9 +14,10 @@
  /* Single Float 0.0 : */
    #define FF_0  make_FF(0,0,0)
  /* Single Float 1.0 : */
---- src/lispbibl.d.orig	2017-02-24 10:42:57.481011497 -0700
-+++ src/lispbibl.d	2017-02-24 10:43:07.078929402 -0700
-@@ -1203,9 +1203,9 @@ typedef signed int  signean;
+diff -up clisp-2.49.93/src/lispbibl.d.negshift clisp-2.49.93/src/lispbibl.d
+--- clisp-2.49.93/src/lispbibl.d.negshift	2018-02-26 11:37:33.998610668 -0500
++++ clisp-2.49.93/src/lispbibl.d	2018-02-26 11:37:34.008610429 -0500
+@@ -1360,9 +1360,9 @@ typedef signed int  signean;
    #endif
  #endif
  /* Minus bit number n (0<=n<32) */
@@ -27,7 +29,7 @@
  %% export_def(bit(n));
  %% #if notused
  %% export_def(bitm(n));
-@@ -3029,7 +3029,7 @@ typedef signed_int_with_n_bits(intVsize)
+@@ -5488,7 +5488,7 @@ typedef signed_int_with_n_bits(intVsize)
    #define vbit(n)  (LL(1)<<(n))
    #define vbitm(n)  (LL(2)<<((n)-1))
    #define vbit_test(x,n)  ((x) & vbit(n))
@@ -36,7 +38,7 @@
  #else
    #define vbit  bit
    #define vbitm  bitm
-@@ -5363,7 +5363,7 @@ typedef unsigned_int_with_n_bits(char_in
+@@ -8060,7 +8060,7 @@ typedef unsigned_int_with_n_bits(char_in
   > delta: a constant
   < result: incremented fixnum */
  #define fixnum_inc(obj,delta)                                           \
@@ -45,8 +47,9 @@
  %% export_def(fixnum_inc(obj,delta));
  
  /* posfixnum(x) is a fixnum with value x>=0. */
---- src/spvw_gcmark.d.orig	2017-02-24 10:37:24.000000000 -0700
-+++ src/spvw_gcmark.d	2017-02-24 10:43:07.078929402 -0700
+diff -up clisp-2.49.93/src/spvw_gcmark.d.negshift clisp-2.49.93/src/spvw_gcmark.d
+--- clisp-2.49.93/src/spvw_gcmark.d.negshift	2018-02-26 11:22:55.000000000 -0500
++++ clisp-2.49.93/src/spvw_gcmark.d	2018-02-26 11:38:05.018870433 -0500
 @@ -43,7 +43,7 @@ local void gc_mark (object obj)
      goto down; /* and descent */                                        \
    }
@@ -100,7 +103,7 @@
 +  { curr = objectplus(pred,((oint)-(soint)offsetofa(record_,recdata))<<(oint_addr_shift-addr_shift)); /* record becomes current object */ \
      pred = prepred; goto up; /* go further up */  \
    }
- #ifdef STANDARD_HEAPCODES
+ #ifdef ONE_FREE_BIT_HEAPCODES
 @@ -348,7 +348,7 @@ local void gc_mark (object obj)
         curr = currently marked  object, store in *pred */
      var object prepred = *(gcv_object_t*)ThePointer(pred); /* old predecessor */

@@ -1,6 +1,7 @@
---- src/control.d.orig	2017-02-24 10:37:24.000000000 -0700
-+++ src/control.d	2017-02-24 10:42:57.475011548 -0700
-@@ -1591,7 +1591,7 @@ LISPFUN(maplap,seclass_default,2,0,rest,
+diff -up clisp-2.49.93/src/control.d.volatile clisp-2.49.93/src/control.d
+--- clisp-2.49.93/src/control.d.volatile	2018-02-26 11:22:55.000000000 -0500
++++ clisp-2.49.93/src/control.d	2018-02-26 11:31:38.737088256 -0500
+@@ -1602,7 +1602,7 @@ LISPFUN(maplap,seclass_default,2,0,rest,
  
  LISPSPECFORM(tagbody, 0,0,body)
  { /* (TAGBODY {tag | statement}), CLTL p. 130 */
@@ -9,9 +10,10 @@
    { /* build GENV-frame: */
      var gcv_object_t* top_of_frame = STACK; /* pointer to frame */
      pushSTACK(aktenv.go_env);
---- src/eval.d.orig	2017-02-24 10:37:24.000000000 -0700
-+++ src/eval.d	2017-02-24 10:42:57.479011514 -0700
-@@ -710,10 +710,10 @@ global void throw_to (object tag) {
+diff -up clisp-2.49.93/src/eval.d.volatile clisp-2.49.93/src/eval.d
+--- clisp-2.49.93/src/eval.d.volatile	2018-02-26 11:22:55.000000000 -0500
++++ clisp-2.49.93/src/eval.d	2018-02-26 11:32:25.995960520 -0500
+@@ -708,10 +708,10 @@ global void throw_to (object tag) {
  global maygc void invoke_handlers (object cond) {
    /* Also deactivates the handler being called, and all newer handlers.
       the handler-ranges, which are screened off: */
@@ -24,8 +26,8 @@
    while (1) {
      /* search in Stack starting at FRAME for a suitable HANDLER-Frame: */
      if (!(other_ranges == NULL) && (FRAME == other_ranges->low_limit)) {
-@@ -726,7 +726,7 @@ global maygc void invoke_handlers (objec
-       if (framecode(FRAME_(0)) == HANDLER_frame_info) { /* Handler-Frame? */
+@@ -725,7 +725,7 @@ global maygc void invoke_handlers (objec
+       if (frame_info == HANDLER_frame_info || frame_info == C_HANDLER_frame_info) { /* Handler-Frame? */
          /* loop over types of the vectors #(type1 label1 ... typem labelm): */
          var uintL m2 = Svector_length(Car(FRAME_(frame_handlers))); /* 2*m */
 -        var uintL i = 0;
@@ -33,7 +35,7 @@
          do {
            pushSTACK(cond); /* save cond */
            pushSTACK(cond);
-@@ -2398,7 +2398,7 @@ local maygc void trace_call (object fun,
+@@ -2432,7 +2432,7 @@ local maygc void trace_call (object fun,
      /* But ':ALLOW-OTHER-KEYS NIL' hides a subsequent ':ALLOW-OTHER-KEYS T' \
       (see CLHS 3.4.1.4.1.1). */                                         \
      var bool allow_hidden = false; /* true if seen ':ALLOW-OTHER-KEYS NIL' */ \
@@ -42,7 +44,7 @@
      while (check_count--) {                                             \
        var object kw = NEXT(argptr);                /* next Argument */  \
        var object val = NEXT(argptr);            /* and value for it */  \
-@@ -2441,7 +2441,7 @@ local maygc void trace_call (object fun,
+@@ -2475,7 +2475,7 @@ local maygc void trace_call (object fun,
   > found_statement: what is to be done, if value found */
  #define find_keyword_value(notfound_statement,found_statement)          \
    { var gcv_object_t* argptr = rest_args_pointer;                       \
@@ -51,7 +53,7 @@
      dotimesC(find_count,argcount, {                                     \
        if (eq(NEXT(argptr),keyword)) goto kw_found; /* right keyword? */ \
        argptr skipSTACKop -1;   /* NEXT */                               \
-@@ -2460,8 +2460,9 @@ local maygc void trace_call (object fun,
+@@ -2494,8 +2494,9 @@ local maygc void trace_call (object fun,
   < mv_count/mv_space: values
   < STACK: cleaned up, = args_pointer
   can trigger GC */
@@ -63,7 +65,7 @@
  {
    /* 1st step: finish building of APPLY-frame: */
    var sp_jmp_buf my_jmp_buf;
-@@ -2649,7 +2650,7 @@ local maygc Values funcall_iclosure (obj
+@@ -2683,7 +2684,7 @@ local maygc Values funcall_iclosure (obj
          pushSTACK(NIL); /* start of list */
          if (argcount>0) {
            var gcv_object_t* ptr = args_pointer STACKop -(uintP)argcount;
@@ -72,7 +74,7 @@
            dotimespC(count,argcount, {
              var object new_cons = allocate_cons();
              Car(new_cons) = BEFORE(ptr);
-@@ -2664,7 +2665,7 @@ local maygc Values funcall_iclosure (obj
+@@ -2698,7 +2699,7 @@ local maygc Values funcall_iclosure (obj
        /* process &KEY-parameters: */
        if (!numberp(TheIclosure(closure)->clos_keywords)) {
          /* Keyword-parameters present */
@@ -81,7 +83,7 @@
          /* argcount = number of remaining arguments */
          /* halve argcount --> number of pairs Key.Value: */
          if (argcount%2) { /* number was odd -> not paired: */
-@@ -2936,7 +2937,7 @@ local Values eval_ffunction (object fun)
+@@ -2970,7 +2971,7 @@ local Values eval_ffunction (object fun)
   > form: form
   < mv_count/mv_space: values
   can trigger GC */
@@ -90,7 +92,7 @@
  {
   start:
    /* Test for Keyboard-Interrupt: */
-@@ -2991,7 +2992,7 @@ modexp maygc Values eval (object form)
+@@ -3025,7 +3026,7 @@ modexp maygc Values eval (object form)
   > form: Form
   < mv_count/mv_space: values
   can trigger GC */
@@ -99,7 +101,7 @@
    var sp_jmp_buf my_jmp_buf;
    /* build EVAL-Frame: */
    {
-@@ -5734,7 +5735,8 @@ local maygc Values funcall_closure (obje
+@@ -5769,7 +5770,8 @@ local maygc Values funcall_closure (obje
    #define GOTO_ERROR(label)  goto label
    #define DEBUG_CHECK_BYTEPTR(b)     do{}while(0)
  #endif
@@ -109,7 +111,7 @@
                                              const uintB* byteptr_in)
  {
    GCTRIGGER_IF(true, {
-@@ -5763,7 +5765,7 @@ local /*maygc*/ Values interpret_bytecod
+@@ -5798,7 +5800,7 @@ local /*maygc*/ Values interpret_bytecod
   #endif
    TRACE_CALL(closure,'B','C');
    /* situate closure in STACK, below the arguments: */
@@ -118,9 +120,10 @@
   #ifndef FAST_SP
    /* If there is no fast SP-Access, one has to introduce
     an extra pointer: */
---- src/lispbibl.d.orig	2017-02-24 10:41:33.223732185 -0700
-+++ src/lispbibl.d	2017-02-24 10:42:57.481011497 -0700
-@@ -9103,7 +9103,7 @@ All other long words on the LISP-Stack a
+diff -up clisp-2.49.93/src/lispbibl.d.volatile clisp-2.49.93/src/lispbibl.d
+--- clisp-2.49.93/src/lispbibl.d.volatile	2018-02-26 11:22:55.000000000 -0500
++++ clisp-2.49.93/src/lispbibl.d	2018-02-26 11:31:38.742088137 -0500
+@@ -11836,7 +11836,7 @@ All other long words on the LISP-Stack a
      #define FAST_SP
    #endif
  #elif defined(GNU) && defined(SP_register)
@@ -129,8 +132,9 @@
    #ifdef SPARC64
      #define SP()  (__SP+2048)
    #else
---- src/record.d.orig	2017-02-24 10:37:24.000000000 -0700
-+++ src/record.d	2017-02-24 10:42:57.482011489 -0700
+diff -up clisp-2.49.93/src/record.d.volatile clisp-2.49.93/src/record.d
+--- clisp-2.49.93/src/record.d.volatile	2018-02-26 11:22:56.000000000 -0500
++++ clisp-2.49.93/src/record.d	2018-02-26 11:31:38.743088113 -0500
 @@ -1406,7 +1406,7 @@ LISPFUNNR(punbound,0) { /* not Foldable
   > obj: the same CLOS instance, not a forward pointer
   < result: the same CLOS instance, not a forward pointer
@@ -140,9 +144,10 @@
    /* Note about the handling of multiple consecutive class redefinitions:
       When there are multiple class redefinitions before an instance gets to
       be updated, we call UPDATE-INSTANCE-FOR-REDEFINED-CLASS once for each
---- src/spvw.d.orig	2017-02-24 10:37:24.000000000 -0700
-+++ src/spvw.d	2017-02-24 10:42:57.482011489 -0700
-@@ -3466,7 +3466,7 @@ local inline void main_actions (struct a
+diff -up clisp-2.49.93/src/spvw.d.volatile clisp-2.49.93/src/spvw.d
+--- clisp-2.49.93/src/spvw.d.volatile	2018-02-26 11:22:55.000000000 -0500
++++ clisp-2.49.93/src/spvw.d	2018-02-26 11:31:38.743088113 -0500
+@@ -3888,7 +3888,7 @@ local inline void main_actions (struct a
      var gcv_object_t* top_of_frame = STACK; /* pointer over frame */
      var sp_jmp_buf returner; /* return point */
      var const char* const* fileptr = &p->argv_init_files[0];
@@ -151,7 +156,7 @@
      finish_entry_frame(DRIVER,returner,,goto done_driver_init_files;);
      do {
        pushSTACK(asciz_to_string(*fileptr++,O(misc_encoding)));
-@@ -3484,8 +3484,8 @@ local inline void main_actions (struct a
+@@ -3906,8 +3906,8 @@ local inline void main_actions (struct a
      if (p->argv_compile_filecount > 0) {
        var gcv_object_t* top_of_frame = STACK; /* pointer over frame */
        var sp_jmp_buf returner; /* return point */
@@ -162,9 +167,10 @@
        finish_entry_frame(DRIVER,returner,,goto done_driver_compile_files;);
        do {
          var uintC argcount = 1;
---- src/stream.d.orig	2017-02-24 10:37:24.000000000 -0700
-+++ src/stream.d	2017-02-24 10:42:57.484011471 -0700
-@@ -5839,7 +5839,7 @@ local maygc void clear_output_unbuffered
+diff -up clisp-2.49.93/src/stream.d.volatile clisp-2.49.93/src/stream.d
+--- clisp-2.49.93/src/stream.d.volatile	2018-02-26 11:22:56.000000000 -0500
++++ clisp-2.49.93/src/stream.d	2018-02-26 11:31:38.746088041 -0500
+@@ -5875,7 +5875,7 @@ local maygc void clear_output_unbuffered
   close_ochannel(stream, abort);
   > stream : Channel-Stream
   > abort: flag: non-0 => ignore errors */
@@ -173,7 +179,7 @@
    pushSTACK(stream);
    MAYBE_IGNORE_ERRORS(abort,oconv_unshift_output_unbuffered(stream));
    stream = STACK_0;
-@@ -8325,7 +8325,7 @@ local void closed_buffered (object strea
+@@ -8358,7 +8358,7 @@ local void closed_buffered (object strea
   > stream : File-Stream.
   > abort: flag: non-0 => ignore errors
   changed in stream: all Components except name and truename */
@@ -182,7 +188,7 @@
    /* Handle=NIL (Stream already closed) -> finished: */
    if (nullp(BufferedStream_channel(stream)))
      return;
-@@ -9310,7 +9310,7 @@ local maygc char** lisp_completion (char
+@@ -9326,7 +9326,7 @@ local maygc char** lisp_completion (char
        }
        sstring_un_realloc(m);
        var uintL charcount = Sstring_length(m);

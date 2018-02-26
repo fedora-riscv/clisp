@@ -1,26 +1,25 @@
 # Mercurial snapshot
-%global hgver 20170224hg
+%global hgver 20180224hg
 
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
-Version:	2.49
-Release:	27.%{hgver}%{?dist}
-
+Version:	2.49.93
+Release:	0.1.%{hgver}%{?dist}
 License:	GPLv2
 URL:		http://www.clisp.org/
 # The source for this package was pulled from upstream's mercurial repository.
 # Use the following commands to generate the tarball:
-#   hg clone -u cf1453aed337 http://hg.code.sf.net/p/clisp/clisp clisp-2.49
-#   rm -fr clisp-2.49/.hg*
-#   tar cvJf clisp-2.49-20170224hg.tar.xz clisp-2.49
+#   hg clone -u b55b8196c9f2 http://hg.code.sf.net/p/clisp/clisp clisp-2.49.93
+#   rm -fr clisp-2.49.93/.hg*
+#   tar cvJf clisp-2.49.93-20180224hg.tar.xz clisp-2.49.93
 Source0:	%{name}-%{version}-%{hgver}.tar.xz
 #Source0:	http://downloads.sourceforge.net/clisp/%%{name}-%%{version}.tar.bz2
 # http://sourceforge.net/tracker/?func=detail&aid=3529607&group_id=1355&atid=301355
-Patch0:		%{name}-format.patch
+# Patch0:		%%{name}-format.patch
 # http://sourceforge.net/tracker/?func=detail&aid=3529615&group_id=1355&atid=301355
-Patch1:		%{name}-arm.patch
+# Patch1:		%%{name}-arm.patch
 # http://sourceforge.net/tracker/?func=detail&aid=3572511&group_id=1355&atid=301355
-Patch2:		%{name}-libsvm.patch
+# Patch2:		%%{name}-libsvm.patch
 # http://sourceforge.net/tracker/?func=detail&aid=3572516&group_id=1355&atid=301355
 Patch3:		%{name}-db.patch
 # Linux-specific fixes.  Sent upstream 25 Jul 2012.
@@ -54,8 +53,11 @@ BuildRequires:	pcre-devel
 BuildRequires:	postgresql-devel
 BuildRequires:	zlib-devel
 
-# See Red Hat bugs 238954 (ppc64) and 925155 (aarch64)
-ExcludeArch:	%{power64} aarch64
+# 2018-02-26
+# On s390x, it builds, but does not run properly:
+# ./lisp.run -B . -N locale -E UTF-8 -Emisc 1:1 -Epathname 1:1 -norc -m 2MW -lp ../src/ -x '(and (load "../src/init.lisp") (sys::%saveinitmem) (ext::exit)) (ext::exit t)'
+# *** stack smashing detected ***: <unknown> terminated
+ExcludeArch:	s390x
 
 Requires:	emacs-filesystem
 Requires:	vim-filesystem
@@ -98,14 +100,14 @@ Files necessary for linking CLISP programs.
 
 %prep
 %setup -q
-%patch0
-%patch1
-%patch2
+# %%patch0
+# %%patch1
+# %%patch2
 %patch3
 %patch4
-%patch5
-%patch6
-%patch7
+%patch5 -p1
+%patch6 -p1
+%patch7 -p1
 
 # Convince CLisp to build against compat-readline5 instead of readline.
 # This is to avoid pulling the GPLv3 readline 6 into a GPLv2 CLisp binary.
@@ -175,7 +177,7 @@ ulimit -s unlimited
 	    --with-module=zlib \
 	    --with-libreadline-prefix=$PWD/readline \
 	    --with-ffcall \
-	    --cbc \
+	    --cbcx \
 	    build \
 %ifarch ppc %{power64}
 	    CPPFLAGS="-DNO_GENERATIONAL_GC -DNO_MULTIMAP_FILE -DNO_SINGLEMAP -I/usr/include/readline5 -I/usr/include/libsvm" \
@@ -423,6 +425,11 @@ ln -s ../../src/modules.c build/full/modules.c
 
 
 %changelog
+* Mon Feb 26 2018 Tom Callaway <spot@fedoraproject.org> - 2.49.93-0.1.20180224hg
+- update to latest in mercurial (lots of fixes)
+- re-enable ppc64, aarch64
+- disable s390x (builds, but does not run properly)
+
 * Wed Feb 07 2018 Fedora Release Engineering <releng@fedoraproject.org> - 2.49-27.20170224hg
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
 
