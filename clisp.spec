@@ -1,37 +1,23 @@
-# Mercurial snapshot
-%global hgver 20180224hg
+%global commit d1310adc5aa7bb3610cd4c44c96b134bba75d405
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+
+# There is a plus on the end for unreleased versions, not for released versions
+%global instdir %{name}-%{version}+
 
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
 Version:	2.49.93
-Release:	0.1.%{hgver}%{?dist}
-License:	GPLv2
+Release:	1.%{shortcommit}git%{?dist}
+License:	GPLv2+
 URL:		http://www.clisp.org/
-# The source for this package was pulled from upstream's mercurial repository.
-# Use the following commands to generate the tarball:
-#   hg clone -u b55b8196c9f2 http://hg.code.sf.net/p/clisp/clisp clisp-2.49.93
-#   rm -fr clisp-2.49.93/.hg*
-#   tar cvJf clisp-2.49.93-20180224hg.tar.xz clisp-2.49.93
-Source0:	%{name}-%{version}-%{hgver}.tar.xz
-#Source0:	http://downloads.sourceforge.net/clisp/%%{name}-%%{version}.tar.bz2
-# http://sourceforge.net/tracker/?func=detail&aid=3529607&group_id=1355&atid=301355
-# Patch0:		%%{name}-format.patch
-# http://sourceforge.net/tracker/?func=detail&aid=3529615&group_id=1355&atid=301355
-# Patch1:		%%{name}-arm.patch
-# http://sourceforge.net/tracker/?func=detail&aid=3572511&group_id=1355&atid=301355
-# Patch2:		%%{name}-libsvm.patch
-# http://sourceforge.net/tracker/?func=detail&aid=3572516&group_id=1355&atid=301355
-Patch3:		%{name}-db.patch
-# Linux-specific fixes.  Sent upstream 25 Jul 2012.
-Patch4:		%{name}-linux.patch
-# Add missing volatile keywords.
-Patch5:		%{name}-volatile.patch
-# Left shift of a signed value invokes undefined behabvior.
-Patch6:		%{name}-negshift.patch
-# Fix an aliasing issue, causes a build failure on ARM.
-Patch7:		%{name}-alias.patch
+# The source for this package was pulled from upstream's git repository.
+Source0:	https://gitlab.com/gnu-clisp/%{name}/repository/archive.tar.gz?ref=%{commit}#/%{name}-%{shortcommit}.tar.gz
+# https://sourceforge.net/p/clisp/patches/35/
+Patch0:		%{name}-db.patch
+# https://sourceforge.net/p/clisp/patches/32/
+Patch1:		%{name}-format.patch
 
-BuildRequires:	compat-readline5-devel
+
 BuildRequires:	dbus-devel
 BuildRequires:	emacs
 BuildRequires:	fcgi-devel
@@ -48,9 +34,12 @@ BuildRequires:	libdb-devel
 BuildRequires:	libglade2-devel
 BuildRequires:	libsigsegv-devel
 BuildRequires:	libsvm-devel
-#BuildRequires:	pari-devel
+BuildRequires:	libxcrypt-devel
+BuildRequires:	pari-devel
+BuildRequires:	pari-gp
 BuildRequires:	pcre-devel
 BuildRequires:	postgresql-devel
+BuildRequires:	readline-devel
 BuildRequires:	zlib-devel
 
 # 2018-02-26
@@ -99,25 +88,9 @@ Files necessary for linking CLISP programs.
 
 
 %prep
-%setup -q
-# %%patch0
-# %%patch1
-# %%patch2
-%patch3
-%patch4
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-
-# Convince CLisp to build against compat-readline5 instead of readline.
-# This is to avoid pulling the GPLv3 readline 6 into a GPLv2 CLisp binary.
-# See Red Hat bug #511303.
-mkdir -p readline/include
-ln -s %{_includedir}/readline5/readline readline/include/readline
-ln -s %{_libdir}/readline5 readline/%{_lib}
-
-# Update config.guess and config.sub
-cp -p /usr/lib/rpm/redhat/config.{guess,sub} src/build-aux
+%setup -q -n %{name}-%{commit}-%{commit}
+%patch0
+%patch1
 
 # Change URLs not affected by the --hyperspec argument to configure
 sed -i.orig 's|lisp.org/HyperSpec/Body/chap-7.html|lispworks.com/documentation/HyperSpec/Body/07_.htm|' \
@@ -148,12 +121,12 @@ chmod a-x modules/clx/clx-manual/html/doc-index.cgi
 
 %build
 ulimit -s unlimited
+export LC_ALL=C.UTF-8
 
 # Do not need to specify base modules: i18n, readline, regexp, syscalls.
 # The dirkey module currently can only be built on Windows/Cygwin/MinGW.
 # The editor module is not in good enough shape to use.
 # The matlab, netica, and oracle modules require proprietary code to build.
-# The pari module only works with pari 2.3.  Fedora currently has pari 2.7.
 # The queens module is intended as an example only, not for actual use.
 ./configure --prefix=%{_prefix} \
 	    --libdir=%{_libdir} \
@@ -171,6 +144,7 @@ ulimit -s unlimited
 	    --with-module=gdbm \
 	    --with-module=gtk2 \
 	    --with-module=libsvm \
+	    --with-module=pari \
 	    --with-module=pcre \
 	    --with-module=postgresql \
 	    --with-module=rawsock \
@@ -179,18 +153,14 @@ ulimit -s unlimited
 	    --with-ffcall \
 	    --cbcx \
 	    build \
-%ifarch ppc %{power64}
-	    CPPFLAGS="-DNO_GENERATIONAL_GC -DNO_MULTIMAP_FILE -DNO_SINGLEMAP -I/usr/include/readline5 -I/usr/include/libsvm" \
-%else
-	    CPPFLAGS="-I/usr/include/readline5 -I/usr/include/libsvm" \
-%endif
-	    CFLAGS="%{optflags} -Wa,--noexecstack -L%{_libdir}/readline5" \
-	    LDFLAGS="-Wl,-z,relro -L%{_libdir}/readline5 -Wl,-z,noexecstack"
+	    CPPFLAGS="-I/usr/include/libsvm" \
+	    CFLAGS="%{optflags} -Wa,--noexecstack" \
+	    LDFLAGS="-Wl,--as-needed -Wl,-z,relro -Wl,-z,noexecstack"
 
 %install
 ulimit -s unlimited
 make -C build DESTDIR=%{buildroot} install
-cp -a build/full %{buildroot}%{_libdir}/%{name}-%{version}+
+cp -a build/full %{buildroot}%{_libdir}/%{instdir}
 rm -f %{buildroot}%{_pkgdocdir}/doc/clisp.{dvi,1,ps}
 rm -f %{buildroot}%{_pkgdocdir}/{COPYRIGHT,GNU-GPL}
 cp -p doc/mop-spec.pdf %{buildroot}%{_pkgdocdir}/doc
@@ -208,41 +178,39 @@ pushd %{buildroot}%{_datadir}/emacs/site-lisp
 popd
 
 # Put back the original config.rpath, and fix executable bits
-cp -p config.rpath.orig %{buildroot}/%{_libdir}/%{name}-%{version}+/build-aux/config.rpath
+cp -p config.rpath.orig %{buildroot}%{_libdir}/%{instdir}/build-aux/config.rpath
 chmod a+x \
-  %{buildroot}/%{_libdir}/%{name}-%{version}+/build-aux/config.guess \
-  %{buildroot}/%{_libdir}/%{name}-%{version}+/build-aux/config.sub \
-  %{buildroot}/%{_libdir}/%{name}-%{version}+/build-aux/depcomp \
-  %{buildroot}/%{_libdir}/%{name}-%{version}+/build-aux/install-sh \
-
+  %{buildroot}%{_libdir}/%{instdir}/build-aux/config.guess \
+  %{buildroot}%{_libdir}/%{instdir}/build-aux/config.sub \
+  %{buildroot}%{_libdir}/%{instdir}/build-aux/depcomp \
+  %{buildroot}%{_libdir}/%{instdir}/build-aux/install-sh \
 # Fix paths in the Makefiles
 for mk in $(find %{buildroot}%{_libdir} -name Makefile); do
-  sed -e "s,$PWD/modules,%{_libdir}/%{name}-%{version}+," \
+  sed -e "s,$PWD/modules,%{_libdir}/%{instdir}," \
       -e "s,$PWD/build/clisp,%{_bindir}/clisp," \
-      -e "s,$PWD/build/linkkit,%{_libdir}/%{name}-%{version}+/linkkit," \
+      -e "s,$PWD/build/linkkit,%{_libdir}/%{instdir}/linkkit," \
       -i $mk
 done
-for mk in %{buildroot}%{_libdir}/%{name}-%{version}+/{base,full}/makevars; do
+for mk in %{buildroot}%{_libdir}/%{instdir}/{base,full}/makevars; do
   sed -e "s, -I$PWD[^']*,," \
-      -e "s,$PWD/readline.*readline/lib[[:digit:]]*,-L%{_libdir}/readline5 -lreadline," \
       -e "s,%{_libdir}/lib\([[:alnum:]]*\)\.so,-l\1,g" \
       -i $mk
 done
 
 # Install config.h, which is needed in some cases
-for dir in %{buildroot}%{_libdir}/%{name}-%{version}+/*; do
+for dir in %{buildroot}%{_libdir}/%{instdir}/*; do
   cp -p build/$(basename $dir)/config.h $dir || :
 done
-cp -p build/config.h %{buildroot}%{_libdir}/%{name}-%{version}+
+cp -p build/config.h %{buildroot}%{_libdir}/%{instdir}
 cp -p build/clx/new-clx/config.h \
-   %{buildroot}%{_libdir}/%{name}-%{version}+/clx/new-clx
+   %{buildroot}%{_libdir}/%{instdir}/clx/new-clx
 
 # Fix permissions
 chmod 0755 %{buildroot}%{_bindir}/%{name}
-chmod 0755 %{buildroot}%{_libdir}/%{name}-%{version}+/full/lisp.run
+chmod 0755 %{buildroot}%{_libdir}/%{instdir}/full/lisp.run
 
 # Fix broken symlinks in the full set
-pushd %{buildroot}%{_libdir}/%{name}-%{version}+/full
+pushd %{buildroot}%{_libdir}/%{instdir}/full
 for obj in bogomips calls gettext readline regexi; do
   rm -f ${obj}.o
   ln -s ../base/${obj}.o ${obj}.o
@@ -288,45 +256,45 @@ ln -s ../../src/modules.c build/full/modules.c
 %{_bindir}/clisp
 %{_mandir}/man1/clisp.1*
 %{_pkgdocdir}/
-%dir %{_libdir}/%{name}-%{version}+/
-%dir %{_libdir}/%{name}-%{version}+/asdf/
-%{_libdir}/%{name}-%{version}+/asdf/asdf.fas
-%dir %{_libdir}/%{name}-%{version}+/base/
-%{_libdir}/%{name}-%{version}+/base/lispinit.mem
-%{_libdir}/%{name}-%{version}+/base/lisp.run
-%dir %{_libdir}/%{name}-%{version}+/berkeley-db/
-%{_libdir}/%{name}-%{version}+/berkeley-db/*.fas
-%dir %{_libdir}/%{name}-%{version}+/bindings/
-%dir %{_libdir}/%{name}-%{version}+/bindings/glibc/
-%{_libdir}/%{name}-%{version}+/bindings/glibc/*.fas
-%dir %{_libdir}/%{name}-%{version}+/clx/
-%dir %{_libdir}/%{name}-%{version}+/clx/new-clx/
-%{_libdir}/%{name}-%{version}+/clx/new-clx/*.fas
-%{_libdir}/%{name}-%{version}+/data/
-%dir %{_libdir}/%{name}-%{version}+/dbus/
-%{_libdir}/%{name}-%{version}+/dbus/*.fas
-%{_libdir}/%{name}-%{version}+/dynmod/
-%dir %{_libdir}/%{name}-%{version}+/fastcgi/
-%{_libdir}/%{name}-%{version}+/fastcgi/*.fas
-%dir %{_libdir}/%{name}-%{version}+/full/
-%{_libdir}/%{name}-%{version}+/full/lispinit.mem
-%{_libdir}/%{name}-%{version}+/full/lisp.run
-%dir %{_libdir}/%{name}-%{version}+/gdbm/
-%{_libdir}/%{name}-%{version}+/gdbm/*.fas
-%dir %{_libdir}/%{name}-%{version}+/gtk2/
-%{_libdir}/%{name}-%{version}+/gtk2/*.fas
-%dir %{_libdir}/%{name}-%{version}+/libsvm/
-%{_libdir}/%{name}-%{version}+/libsvm/*.fas
-#%%dir %%{_libdir}/%%{name}-%%{version}/pari/
-#%%{_libdir}/%%{name}-%%{version}/pari/*.fas
-%dir %{_libdir}/%{name}-%{version}+/pcre/
-%{_libdir}/%{name}-%{version}+/pcre/*.fas
-%dir %{_libdir}/%{name}-%{version}+/postgresql/
-%{_libdir}/%{name}-%{version}+/postgresql/*.fas
-%dir %{_libdir}/%{name}-%{version}+/rawsock/
-%{_libdir}/%{name}-%{version}+/rawsock/*.fas
-%dir %{_libdir}/%{name}-%{version}+/zlib/
-%{_libdir}/%{name}-%{version}+/zlib/*.fas
+%dir %{_libdir}/%{instdir}/
+%dir %{_libdir}/%{instdir}/asdf/
+%{_libdir}/%{instdir}/asdf/asdf.fas
+%dir %{_libdir}/%{instdir}/base/
+%{_libdir}/%{instdir}/base/lispinit.mem
+%{_libdir}/%{instdir}/base/lisp.run
+%dir %{_libdir}/%{instdir}/berkeley-db/
+%{_libdir}/%{instdir}/berkeley-db/*.fas
+%dir %{_libdir}/%{instdir}/bindings/
+%dir %{_libdir}/%{instdir}/bindings/glibc/
+%{_libdir}/%{instdir}/bindings/glibc/*.fas
+%dir %{_libdir}/%{instdir}/clx/
+%dir %{_libdir}/%{instdir}/clx/new-clx/
+%{_libdir}/%{instdir}/clx/new-clx/*.fas
+%{_libdir}/%{instdir}/data/
+%dir %{_libdir}/%{instdir}/dbus/
+%{_libdir}/%{instdir}/dbus/*.fas
+%{_libdir}/%{instdir}/dynmod/
+%dir %{_libdir}/%{instdir}/fastcgi/
+%{_libdir}/%{instdir}/fastcgi/*.fas
+%dir %{_libdir}/%{instdir}/full/
+%{_libdir}/%{instdir}/full/lispinit.mem
+%{_libdir}/%{instdir}/full/lisp.run
+%dir %{_libdir}/%{instdir}/gdbm/
+%{_libdir}/%{instdir}/gdbm/*.fas
+%dir %{_libdir}/%{instdir}/gtk2/
+%{_libdir}/%{instdir}/gtk2/*.fas
+%dir %{_libdir}/%{instdir}/libsvm/
+%{_libdir}/%{instdir}/libsvm/*.fas
+%dir %{_libdir}/%{instdir}/pari/
+%{_libdir}/%{instdir}/pari/*.fas
+%dir %{_libdir}/%{instdir}/pcre/
+%{_libdir}/%{instdir}/pcre/*.fas
+%dir %{_libdir}/%{instdir}/postgresql/
+%{_libdir}/%{instdir}/postgresql/*.fas
+%dir %{_libdir}/%{instdir}/rawsock/
+%{_libdir}/%{instdir}/rawsock/*.fas
+%dir %{_libdir}/%{instdir}/zlib/
+%{_libdir}/%{instdir}/zlib/*.fas
 %{_datadir}/emacs/site-lisp/*
 %{_datadir}/vim/vimfiles/after/syntax/*
 
@@ -334,97 +302,104 @@ ln -s ../../src/modules.c build/full/modules.c
 %doc modules/clx/clx-manual
 %{_bindir}/clisp-link
 %{_mandir}/man1/clisp-link.1*
-%{_libdir}/%{name}-%{version}+/asdf/Makefile
-%{_libdir}/%{name}-%{version}+/asdf/*.lisp
-%{_libdir}/%{name}-%{version}+/asdf/*.sh
-%{_libdir}/%{name}-%{version}+/base/*.a
-%{_libdir}/%{name}-%{version}+/base/*.h
-%{_libdir}/%{name}-%{version}+/base/*.o
-%{_libdir}/%{name}-%{version}+/base/makevars
-%{_libdir}/%{name}-%{version}+/berkeley-db/Makefile
-%{_libdir}/%{name}-%{version}+/berkeley-db/*.h
-%{_libdir}/%{name}-%{version}+/berkeley-db/*.lisp
-%{_libdir}/%{name}-%{version}+/berkeley-db/*.o
-%{_libdir}/%{name}-%{version}+/berkeley-db/*.sh
-%{_libdir}/%{name}-%{version}+/bindings/glibc/Makefile
-%{_libdir}/%{name}-%{version}+/bindings/glibc/*.lisp
-%{_libdir}/%{name}-%{version}+/bindings/glibc/*.o
-%{_libdir}/%{name}-%{version}+/bindings/glibc/*.sh
-%{_libdir}/%{name}-%{version}+/build-aux/
-%{_libdir}/%{name}-%{version}+/clx/new-clx/demos/
-%{_libdir}/%{name}-%{version}+/clx/new-clx/README
-%{_libdir}/%{name}-%{version}+/clx/new-clx/Makefile
-%{_libdir}/%{name}-%{version}+/clx/new-clx/*.h
-%{_libdir}/%{name}-%{version}+/clx/new-clx/*.lisp
-%{_libdir}/%{name}-%{version}+/clx/new-clx/*.o
-%{_libdir}/%{name}-%{version}+/clx/new-clx/*.sh
-%{_libdir}/%{name}-%{version}+/config.h
-%{_libdir}/%{name}-%{version}+/dbus/Makefile
-%{_libdir}/%{name}-%{version}+/dbus/*.h
-%{_libdir}/%{name}-%{version}+/dbus/*.lisp
-%{_libdir}/%{name}-%{version}+/dbus/*.o
-%{_libdir}/%{name}-%{version}+/dbus/*.sh
-%{_libdir}/%{name}-%{version}+/fastcgi/README
-%{_libdir}/%{name}-%{version}+/fastcgi/Makefile
-%{_libdir}/%{name}-%{version}+/fastcgi/*.h
-%{_libdir}/%{name}-%{version}+/fastcgi/*.lisp
-%{_libdir}/%{name}-%{version}+/fastcgi/*.o
-%{_libdir}/%{name}-%{version}+/fastcgi/*.sh
-%{_libdir}/%{name}-%{version}+/full/*.a
-%{_libdir}/%{name}-%{version}+/full/*.h
-%{_libdir}/%{name}-%{version}+/full/*.o
-%{_libdir}/%{name}-%{version}+/full/makevars
-%{_libdir}/%{name}-%{version}+/gdbm/Makefile
-%{_libdir}/%{name}-%{version}+/gdbm/*.h
-%{_libdir}/%{name}-%{version}+/gdbm/*.lisp
-%{_libdir}/%{name}-%{version}+/gdbm/*.o
-%{_libdir}/%{name}-%{version}+/gdbm/*.sh
-%{_libdir}/%{name}-%{version}+/gtk2/Makefile
-%{_libdir}/%{name}-%{version}+/gtk2/*.cfg
-%{_libdir}/%{name}-%{version}+/gtk2/*.glade
-%{_libdir}/%{name}-%{version}+/gtk2/*.h
-%{_libdir}/%{name}-%{version}+/gtk2/*.lisp
-%{_libdir}/%{name}-%{version}+/gtk2/*.o
-%{_libdir}/%{name}-%{version}+/gtk2/*.sh
-%{_libdir}/%{name}-%{version}+/libsvm/README
-%{_libdir}/%{name}-%{version}+/libsvm/Makefile
-%{_libdir}/%{name}-%{version}+/libsvm/*.h
-%{_libdir}/%{name}-%{version}+/libsvm/*.lisp
-%{_libdir}/%{name}-%{version}+/libsvm/*.o
-%{_libdir}/%{name}-%{version}+/libsvm/*.sh
-%{_libdir}/%{name}-%{version}+/linkkit/
-#%%{_libdir}/%%{name}-%%{version}/pari/README
-#%%{_libdir}/%%{name}-%%{version}/pari/Makefile
-#%%{_libdir}/%%{name}-%%{version}/pari/*.h
-#%%{_libdir}/%%{name}-%%{version}/pari/*.lisp
-#%%{_libdir}/%%{name}-%%{version}/pari/*.o
-#%%{_libdir}/%%{name}-%%{version}/pari/*.sh
-%{_libdir}/%{name}-%{version}+/pcre/Makefile
-%{_libdir}/%{name}-%{version}+/pcre/*.h
-%{_libdir}/%{name}-%{version}+/pcre/*.lisp
-%{_libdir}/%{name}-%{version}+/pcre/*.o
-%{_libdir}/%{name}-%{version}+/pcre/*.sh
-%{_libdir}/%{name}-%{version}+/postgresql/README
-%{_libdir}/%{name}-%{version}+/postgresql/Makefile
-%{_libdir}/%{name}-%{version}+/postgresql/*.h
-%{_libdir}/%{name}-%{version}+/postgresql/*.lisp
-%{_libdir}/%{name}-%{version}+/postgresql/*.o
-%{_libdir}/%{name}-%{version}+/postgresql/*.sh
-%{_libdir}/%{name}-%{version}+/rawsock/demos/
-%{_libdir}/%{name}-%{version}+/rawsock/Makefile
-%{_libdir}/%{name}-%{version}+/rawsock/*.h
-%{_libdir}/%{name}-%{version}+/rawsock/*.lisp
-%{_libdir}/%{name}-%{version}+/rawsock/*.o
-%{_libdir}/%{name}-%{version}+/rawsock/*.sh
-%{_libdir}/%{name}-%{version}+/zlib/Makefile
-%{_libdir}/%{name}-%{version}+/zlib/*.h
-%{_libdir}/%{name}-%{version}+/zlib/*.lisp
-%{_libdir}/%{name}-%{version}+/zlib/*.o
-%{_libdir}/%{name}-%{version}+/zlib/*.sh
+%{_libdir}/%{instdir}/asdf/Makefile
+%{_libdir}/%{instdir}/asdf/*.lisp
+%{_libdir}/%{instdir}/asdf/*.sh
+%{_libdir}/%{instdir}/base/*.a
+%{_libdir}/%{instdir}/base/*.h
+%{_libdir}/%{instdir}/base/*.o
+%{_libdir}/%{instdir}/base/makevars
+%{_libdir}/%{instdir}/berkeley-db/Makefile
+%{_libdir}/%{instdir}/berkeley-db/*.h
+%{_libdir}/%{instdir}/berkeley-db/*.lisp
+%{_libdir}/%{instdir}/berkeley-db/*.o
+%{_libdir}/%{instdir}/berkeley-db/*.sh
+%{_libdir}/%{instdir}/bindings/glibc/Makefile
+%{_libdir}/%{instdir}/bindings/glibc/*.lisp
+%{_libdir}/%{instdir}/bindings/glibc/*.o
+%{_libdir}/%{instdir}/bindings/glibc/*.sh
+%{_libdir}/%{instdir}/build-aux/
+%{_libdir}/%{instdir}/clx/new-clx/demos/
+%{_libdir}/%{instdir}/clx/new-clx/README
+%{_libdir}/%{instdir}/clx/new-clx/Makefile
+%{_libdir}/%{instdir}/clx/new-clx/*.h
+%{_libdir}/%{instdir}/clx/new-clx/*.lisp
+%{_libdir}/%{instdir}/clx/new-clx/*.o
+%{_libdir}/%{instdir}/clx/new-clx/*.sh
+%{_libdir}/%{instdir}/config.h
+%{_libdir}/%{instdir}/dbus/Makefile
+%{_libdir}/%{instdir}/dbus/*.h
+%{_libdir}/%{instdir}/dbus/*.lisp
+%{_libdir}/%{instdir}/dbus/*.o
+%{_libdir}/%{instdir}/dbus/*.sh
+%{_libdir}/%{instdir}/fastcgi/README
+%{_libdir}/%{instdir}/fastcgi/Makefile
+%{_libdir}/%{instdir}/fastcgi/*.h
+%{_libdir}/%{instdir}/fastcgi/*.lisp
+%{_libdir}/%{instdir}/fastcgi/*.o
+%{_libdir}/%{instdir}/fastcgi/*.sh
+%{_libdir}/%{instdir}/full/*.a
+%{_libdir}/%{instdir}/full/*.h
+%{_libdir}/%{instdir}/full/*.o
+%{_libdir}/%{instdir}/full/makevars
+%{_libdir}/%{instdir}/gdbm/Makefile
+%{_libdir}/%{instdir}/gdbm/*.h
+%{_libdir}/%{instdir}/gdbm/*.lisp
+%{_libdir}/%{instdir}/gdbm/*.o
+%{_libdir}/%{instdir}/gdbm/*.sh
+%{_libdir}/%{instdir}/gtk2/Makefile
+%{_libdir}/%{instdir}/gtk2/*.cfg
+%{_libdir}/%{instdir}/gtk2/*.glade
+%{_libdir}/%{instdir}/gtk2/*.h
+%{_libdir}/%{instdir}/gtk2/*.lisp
+%{_libdir}/%{instdir}/gtk2/*.o
+%{_libdir}/%{instdir}/gtk2/*.sh
+%{_libdir}/%{instdir}/libsvm/README
+%{_libdir}/%{instdir}/libsvm/Makefile
+%{_libdir}/%{instdir}/libsvm/*.h
+%{_libdir}/%{instdir}/libsvm/*.lisp
+%{_libdir}/%{instdir}/libsvm/*.o
+%{_libdir}/%{instdir}/libsvm/*.sh
+%{_libdir}/%{instdir}/linkkit/
+%{_libdir}/%{instdir}/pari/README
+%{_libdir}/%{instdir}/pari/Makefile
+%{_libdir}/%{instdir}/pari/*.h
+%{_libdir}/%{instdir}/pari/*.lisp
+%{_libdir}/%{instdir}/pari/*.o
+%{_libdir}/%{instdir}/pari/*.sh
+%{_libdir}/%{instdir}/pcre/Makefile
+%{_libdir}/%{instdir}/pcre/*.h
+%{_libdir}/%{instdir}/pcre/*.lisp
+%{_libdir}/%{instdir}/pcre/*.o
+%{_libdir}/%{instdir}/pcre/*.sh
+%{_libdir}/%{instdir}/postgresql/README
+%{_libdir}/%{instdir}/postgresql/Makefile
+%{_libdir}/%{instdir}/postgresql/*.h
+%{_libdir}/%{instdir}/postgresql/*.lisp
+%{_libdir}/%{instdir}/postgresql/*.o
+%{_libdir}/%{instdir}/postgresql/*.sh
+%{_libdir}/%{instdir}/rawsock/demos/
+%{_libdir}/%{instdir}/rawsock/Makefile
+%{_libdir}/%{instdir}/rawsock/*.h
+%{_libdir}/%{instdir}/rawsock/*.lisp
+%{_libdir}/%{instdir}/rawsock/*.o
+%{_libdir}/%{instdir}/rawsock/*.sh
+%{_libdir}/%{instdir}/zlib/Makefile
+%{_libdir}/%{instdir}/zlib/*.h
+%{_libdir}/%{instdir}/zlib/*.lisp
+%{_libdir}/%{instdir}/zlib/*.o
+%{_libdir}/%{instdir}/zlib/*.sh
 %{_datadir}/aclocal/clisp.m4
 
 
 %changelog
+* Thu Jun 21 2018 Jerry James <loganjerry@gmail.com> - 2.49.93-1.d1310adgit
+- License change: GPLv2 to GPLv2+
+- Build with readline 6 due to the new license
+- Drop upstreamed -arm, -libsvm, -alias, and -linux patches
+- Build for all architectures
+- Bring back the pari module
+
 * Mon Feb 26 2018 Tom Callaway <spot@fedoraproject.org> - 2.49.93-0.1.20180224hg
 - update to latest in mercurial (lots of fixes)
 - re-enable ppc64, aarch64

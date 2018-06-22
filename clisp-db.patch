@@ -1,16 +1,5 @@
---- modules/berkeley-db/configure.orig	2017-02-24 10:37:24.000000000 -0700
-+++ modules/berkeley-db/configure	2017-02-24 10:42:31.636232558 -0700
-@@ -5297,7 +5297,7 @@ if ${ac_cv_dbe_set_errcall_accept_dbe+:}
- else
- 
- CFLAGS_save="$CFLAGS"
--CFLAGS="$CFLAGS -Werror"
-+CFLAGS="$CFLAGS -Wno-uninitialized -Werror"
- cat confdefs.h - <<_ACEOF >conftest.$ac_ext
- /* end confdefs.h.  */
- #include <db.h>
---- modules/berkeley-db/configure.in.orig	2017-02-24 10:37:24.000000000 -0700
-+++ modules/berkeley-db/configure.in	2017-02-24 10:42:31.636232558 -0700
+--- modules/berkeley-db/configure.in.orig	2018-04-23 07:44:21.000000000 -0600
++++ modules/berkeley-db/configure.in	2018-06-21 20:30:56.502368686 -0600
 @@ -48,7 +48,7 @@ dnl <http://www.sleepycat.com/docs/ref/u
  AC_CACHE_CHECK([whether DB_ENV->set_errcall() accepts DBE],
  ac_cv_dbe_set_errcall_accept_dbe,[
@@ -20,3 +9,14 @@
  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <db.h>
  void my_callback (const DB_ENV* dbe, const char *errpfx, const char *msg) {}],
  [[DB_ENV dbe; dbe.set_errcall(&dbe,&my_callback);]])],
+--- modules/berkeley-db/configure.orig	2018-04-23 07:44:21.000000000 -0600
++++ modules/berkeley-db/configure	2018-06-21 20:30:56.504368682 -0600
+@@ -5814,7 +5814,7 @@ if ${ac_cv_dbe_set_errcall_accept_dbe+:}
+ else
+ 
+ CFLAGS_save="$CFLAGS"
+-CFLAGS="$CFLAGS -Werror"
++CFLAGS="$CFLAGS -Wno-uninitialized -Werror"
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <db.h>
