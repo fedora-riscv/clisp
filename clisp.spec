@@ -7,7 +7,7 @@
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
 Version:	2.49.93
-Release:	1.%{shortcommit}git%{?dist}
+Release:	2.%{shortcommit}git%{?dist}
 License:	GPLv2+
 URL:		http://www.clisp.org/
 # The source for this package was pulled from upstream's git repository.
@@ -393,6 +393,9 @@ ln -s ../../src/modules.c build/full/modules.c
 
 
 %changelog
+* Thu Jul 12 2018 Fedora Release Engineering <releng@fedoraproject.org> - 2.49.93-2.d1310adgit
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
+
 * Thu Jun 21 2018 Jerry James <loganjerry@gmail.com> - 2.49.93-1.d1310adgit
 - License change: GPLv2 to GPLv2+
 - Build with readline 6 due to the new license
