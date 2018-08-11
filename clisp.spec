@@ -1,4 +1,4 @@
-%global commit d1310adc5aa7bb3610cd4c44c96b134bba75d405
+%global commit 90b363151ce0f8a7ffd301028f92ec865807276a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 # There is a plus on the end for unreleased versions, not for released versions
@@ -7,16 +7,21 @@
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
 Version:	2.49.93
-Release:	2.%{shortcommit}git%{?dist}
+Release:	3.%{shortcommit}git%{?dist}
 License:	GPLv2+
 URL:		http://www.clisp.org/
 # The source for this package was pulled from upstream's git repository.
 Source0:	https://gitlab.com/gnu-clisp/%{name}/repository/archive.tar.gz?ref=%{commit}#/%{name}-%{shortcommit}.tar.gz
+# Updated translations
+Source1:	http://translationproject.org/latest/clisp/sv.po
 # https://sourceforge.net/p/clisp/patches/35/
 Patch0:		%{name}-db.patch
 # https://sourceforge.net/p/clisp/patches/32/
 Patch1:		%{name}-format.patch
-
+# The encrypt and setkey functions are no longer available from glibc
+Patch2:		%{name}-setkey.patch
+# Adapt to changes in pari 2.11.0
+Patch3:		%{name}-pari.patch
 
 BuildRequires:	dbus-devel
 BuildRequires:	emacs
@@ -88,9 +93,7 @@ Files necessary for linking CLISP programs.
 
 
 %prep
-%setup -q -n %{name}-%{commit}-%{commit}
-%patch0
-%patch1
+%autosetup -p0 -n %{name}-%{commit}-%{commit}
 
 # Change URLs not affected by the --hyperspec argument to configure
 sed -i.orig 's|lisp.org/HyperSpec/Body/chap-7.html|lispworks.com/documentation/HyperSpec/Body/07_.htm|' \
@@ -118,6 +121,9 @@ sed -i 's/;; \((setq \*browser\* .*)\)/\1/' src/cfgunix.lisp
 tar -C modules/clx -xzf modules/clx/clx-manual.tar.gz
 chmod -R go+r modules/clx/clx-manual
 chmod a-x modules/clx/clx-manual/html/doc-index.cgi
+
+# Update the translations
+cp -p %{SOURCE1} src/po
 
 %build
 ulimit -s unlimited
@@ -393,6 +399,9 @@ ln -s ../../src/modules.c build/full/modules.c
 
 
 %changelog
+* Fri Aug 10 2018 Jerry James <loganjerry@gmail.com> - 2.49.93-3.90b3631git
+- Update to latest git snapshot for bug fixes
+
 * Thu Jul 12 2018 Fedora Release Engineering <releng@fedoraproject.org> - 2.49.93-2.d1310adgit
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
 
