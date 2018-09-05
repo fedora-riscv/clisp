@@ -43,7 +43,7 @@ BuildRequires:	libxcrypt-devel
 BuildRequires:	pari-devel
 BuildRequires:	pari-gp
 BuildRequires:	pcre-devel
-BuildRequires:	postgresql-devel
+BuildRequires:	libpq-devel
 BuildRequires:	readline-devel
 BuildRequires:	zlib-devel
 
