@@ -32,6 +32,9 @@ BuildRequires:	gdbm-devel
 BuildRequires:	gettext-devel
 BuildRequires:	ghostscript
 BuildRequires:	glibc-langpack-en
+BUildRequires:	glibc-langpack-fr
+BuildRequires:	glibc-langpack-ja
+BuildRequires:	glibc-langpack-zh
 BuildRequires:	groff
 BuildRequires:	gtk2-devel
 BuildRequires:	libXaw-devel
@@ -40,6 +43,7 @@ BuildRequires:	libdb-devel
 BuildRequires:	libglade2-devel
 BuildRequires:	libsigsegv-devel
 BuildRequires:	libsvm-devel
+BuildRequires:	libunistring-devel
 BuildRequires:	libxcrypt-devel
 BuildRequires:	pari-devel
 BuildRequires:	pari-gp
