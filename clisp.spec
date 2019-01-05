@@ -31,6 +31,7 @@ BuildRequires:	gcc
 BuildRequires:	gdbm-devel
 BuildRequires:	gettext-devel
 BuildRequires:	ghostscript
+BuildRequires:	glibc-langpack-en
 BuildRequires:	groff
 BuildRequires:	gtk2-devel
 BuildRequires:	libXaw-devel
