@@ -7,7 +7,7 @@
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
 Version:	2.49.93
-Release:	3.%{shortcommit}git%{?dist}
+Release:	4.%{shortcommit}git%{?dist}
 License:	GPLv2+
 URL:		http://www.clisp.org/
 # The source for this package was pulled from upstream's git repository.
@@ -404,6 +404,9 @@ ln -s ../../src/modules.c build/full/modules.c
 
 
 %changelog
+* Mon Jan 14 2019 Björn Esser <besser82@fedoraproject.org> - 2.49.93-4.90b3631git
+- Rebuilt for libcrypt.so.2 (#1666033)
+
 * Fri Aug 10 2018 Jerry James <loganjerry@gmail.com> - 2.49.93-3.90b3631git
 - Update to latest git snapshot for bug fixes
 
