@@ -1,4 +1,4 @@
-%global commit 90b363151ce0f8a7ffd301028f92ec865807276a
+%global commit df3b9f6fdcff22832898e89a989eb499c0f842ed
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 # There is a plus on the end for unreleased versions, not for released versions
@@ -7,7 +7,7 @@
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
 Version:	2.49.93
-Release:	6.%{shortcommit}git%{?dist}
+Release:	7.%{shortcommit}git%{?dist}
 License:	GPLv2+
 URL:		http://www.clisp.org/
 # The source for this package was pulled from upstream's git repository.
@@ -22,6 +22,8 @@ Patch1:		%{name}-format.patch
 Patch2:		%{name}-setkey.patch
 # Adapt to changes in pari 2.11.0
 Patch3:		%{name}-pari.patch
+# The combination of register and volatile is nonsensical
+Patch4:		%{name}-register-volatile.patch
 
 BuildRequires:	dbus-devel
 BuildRequires:	emacs
@@ -51,12 +53,6 @@ BuildRequires:	pcre-devel
 BuildRequires:	libpq-devel
 BuildRequires:	readline-devel
 BuildRequires:	zlib-devel
-
-# 2018-02-26
-# On s390x, it builds, but does not run properly:
-# ./lisp.run -B . -N locale -E UTF-8 -Emisc 1:1 -Epathname 1:1 -norc -m 2MW -lp ../src/ -x '(and (load "../src/init.lisp") (sys::%saveinitmem) (ext::exit)) (ext::exit t)'
-# *** stack smashing detected ***: <unknown> terminated
-ExcludeArch:	s390x
 
 Requires:	emacs-filesystem
 Requires:	vim-filesystem
@@ -117,7 +113,7 @@ cp -p src/build-aux/config.rpath config.rpath.orig
 sed -i -e 's/${wl}-rpath ${wl}/-L/g' src/build-aux/config.rpath
 
 # Fix modules that need access to symbols in libgnu.a
-sed -i 's/\(${GLLIB_A}\) \(${LIBS}\)/-Wl,--whole-archive \1 -Wl,--no-whole-archive \2/' src/makemake.in
+sed -i 's/\(${GLLIB_A}\) \(${LIBS}\)/-Wl,--whole-archive \1 -Wl,--no-whole-archive \2 -ldl/' src/makemake.in
 
 # Enable firefox to be the default browser for displaying documentation
 sed -i 's/;; \((setq \*browser\* .*)\)/\1/' src/cfgunix.lisp
@@ -178,7 +174,7 @@ cp -p doc/mop-spec.pdf %{buildroot}%{_pkgdocdir}/doc
 cp -p doc/*.png %{buildroot}%{_pkgdocdir}/doc
 cp -p doc/Why-CLISP* %{buildroot}%{_pkgdocdir}/doc
 cp -p doc/regexp.html %{buildroot}%{_pkgdocdir}/doc
-find %{buildroot}%{_libdir} -name '*.dvi' | xargs rm -f
+find %{buildroot}%{_libdir} -name '*.dvi' -exec rm -f {} \+
 %find_lang %{name}
 %find_lang %{name}low
 cat %{name}low.lang >> %{name}.lang
@@ -404,6 +400,11 @@ ln -s ../../src/modules.c build/full/modules.c
 
 
 %changelog
+* Sat Mar 30 2019 Jerry James <loganjerry@gmail.com> - 2.49.93-7.df3b9f6git
+- Update to latest git snapshot for bug fixes
+- Add -register-volatile patch
+- Build for s390x again now that bz 1689769 is fixed
+
 * Sun Feb 17 2019 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 2.49.93-6.90b3631git
 - Rebuild for readline 8.0
 
