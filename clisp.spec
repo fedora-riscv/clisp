@@ -126,6 +126,10 @@ chmod a-x modules/clx/clx-manual/html/doc-index.cgi
 # Update the translations
 cp -p %{SOURCE1} src/po
 
+# On some koji builders, something is already listening on port 9090, which
+# causes a spurious test failure.  Change to port 9096 for the test.
+sed -i 's/9090/9096/g' tests/socket.tst
+
 %build
 ulimit -s unlimited
 export LC_ALL=C.UTF-8
