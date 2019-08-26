@@ -1,4 +1,4 @@
-%global commit df3b9f6fdcff22832898e89a989eb499c0f842ed
+%global commit dd403693629f7b5cee04f360fb559783c6771bf7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 # There is a plus on the end for unreleased versions, not for released versions
@@ -7,13 +7,14 @@
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
 Version:	2.49.93
-Release:	8.%{shortcommit}git%{?dist}
+Release:	9.%{shortcommit}git%{?dist}
 License:	GPLv2+
 URL:		http://www.clisp.org/
 # The source for this package was pulled from upstream's git repository.
 Source0:	https://gitlab.com/gnu-clisp/%{name}/repository/archive.tar.gz?ref=%{commit}#/%{name}-%{shortcommit}.tar.gz
 # Updated translations
 Source1:	http://translationproject.org/latest/clisp/sv.po
+Source2:	http://translationproject.org/latest/clisp/de.po
 # https://sourceforge.net/p/clisp/patches/35/
 Patch0:		%{name}-db.patch
 # https://sourceforge.net/p/clisp/patches/32/
@@ -124,7 +125,7 @@ chmod -R go+r modules/clx/clx-manual
 chmod a-x modules/clx/clx-manual/html/doc-index.cgi
 
 # Update the translations
-cp -p %{SOURCE1} src/po
+cp -p %{SOURCE1} %{SOURCE2} src/po
 
 # On some koji builders, something is already listening on port 9090, which
 # causes a spurious test failure.  Change to port 9096 for the test.
@@ -404,6 +405,10 @@ ln -s ../../src/modules.c build/full/modules.c
 
 
 %changelog
+* Mon Aug 26 2019 Jerry James <loganjerry@gmail.com> - 2.49.93-9.dd40369git
+- Update to latest git snapshot for bug fixes
+- Add latest German translation
+
 * Wed Jul 24 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2.49.93-8.df3b9f6git
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
 
