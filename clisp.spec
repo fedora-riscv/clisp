@@ -1,4 +1,4 @@
-%global commit dd403693629f7b5cee04f360fb559783c6771bf7
+%global commit c26de78733578fc38952d2485313065eba4f5caa
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 # There is a plus on the end for unreleased versions, not for released versions
@@ -7,7 +7,7 @@
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
 Version:	2.49.93
-Release:	9.%{shortcommit}git%{?dist}
+Release:	10.%{shortcommit}git%{?dist}
 License:	GPLv2+
 URL:		http://www.clisp.org/
 # The source for this package was pulled from upstream's git repository.
@@ -405,6 +405,9 @@ ln -s ../../src/modules.c build/full/modules.c
 
 
 %changelog
+* Tue Dec 17 2019 Jerry James <loganjerry@gmail.com> - 2.49.93-10.c26de78git
+- Update to latest git snapshot for HyperSpec fixes
+
 * Mon Aug 26 2019 Jerry James <loganjerry@gmail.com> - 2.49.93-9.dd40369git
 - Update to latest git snapshot for bug fixes
 - Add latest German translation
