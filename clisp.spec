@@ -7,7 +7,7 @@
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
 Version:	2.49.93
-Release:	12.%{shortcommit}git%{?dist}
+Release:	13.%{shortcommit}git%{?dist}
 License:	GPLv2+
 URL:		http://www.clisp.org/
 # The source for this package was pulled from upstream's git repository.
@@ -132,6 +132,9 @@ cp -p %{SOURCE1} %{SOURCE2} src/po
 sed -i 's/9090/9096/g' tests/socket.tst
 
 %build
+# This package uses toplevel ASMs which are incompatible with LTO
+%define _lto_cflags %{nil}
+
 ulimit -s unlimited
 export LC_ALL=C.UTF-8
 
@@ -405,6 +408,9 @@ ln -s ../../src/modules.c build/full/modules.c
 
 
 %changelog
+* Mon Jul 27 2020 Jeff Law <law@redhat.com> - 2.49.93-13.c26de78git
+- Disable LTO
+
 * Mon Jul 27 2020 Fedora Release Engineering <releng@fedoraproject.org> - 2.49.93-12.c26de78git
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
 
