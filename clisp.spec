@@ -48,6 +48,7 @@ BuildRequires:	libsigsegv-devel
 BuildRequires:	libsvm-devel
 BuildRequires:	libunistring-devel
 BuildRequires:	libxcrypt-devel
+BuildRequires:	make
 BuildRequires:	pari-devel
 BuildRequires:	pari-gp
 BuildRequires:	pcre-devel
