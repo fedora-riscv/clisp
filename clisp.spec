@@ -7,7 +7,7 @@
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
 Version:	2.49.93
-Release:	11.%{shortcommit}git%{?dist}
+Release:	12.%{shortcommit}git%{?dist}
 License:	GPLv2+
 URL:		http://www.clisp.org/
 # The source for this package was pulled from upstream's git repository.
@@ -405,6 +405,9 @@ ln -s ../../src/modules.c build/full/modules.c
 
 
 %changelog
+* Thu Nov 12 2020 Jerry James <loganjerry@gmail.com> - 2.49.93-12.c26de78git
+- Rebuild for multithreaded pari
+
 * Tue Jan 28 2020 Fedora Release Engineering <releng@fedoraproject.org> - 2.49.93-11.c26de78git
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
 
