@@ -7,7 +7,7 @@
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
 Version:	2.49.93
-Release:	15.%{shortcommit}git%{?dist}
+Release:	16.%{shortcommit}git%{?dist}
 License:	GPLv2+
 URL:		http://www.clisp.org/
 # The source for this package was pulled from upstream's git repository.
@@ -409,6 +409,9 @@ ln -s ../../src/modules.c build/full/modules.c
 
 
 %changelog
+* Tue Jan 26 2021 Fedora Release Engineering <releng@fedoraproject.org> - 2.49.93-16.a9aeb80git
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
+
 * Mon Nov  9 2020 Jerry James <loganjerry@gmail.com> - 2.49.93-15.a9aeb80git
 - Update to latest git snapshot for more HyperSpec fixes
 
