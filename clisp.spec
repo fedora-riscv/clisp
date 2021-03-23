@@ -1,4 +1,4 @@
-%global commit a9aeb8030714ae97ef7f8e01c2ee68b6f297e749
+%global commit d9cbf22d18680f9b9c84579be6bc363e4bd1090c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 # There is a plus on the end for unreleased versions, not for released versions
@@ -7,7 +7,7 @@
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
 Version:	2.49.93
-Release:	17.%{shortcommit}git%{?dist}
+Release:	18.%{shortcommit}git%{?dist}
 License:	GPLv2+
 URL:		http://www.clisp.org/
 # The source for this package was pulled from upstream's git repository.
@@ -27,6 +27,7 @@ Patch3:		%{name}-pari.patch
 Patch4:		%{name}-register-volatile.patch
 
 BuildRequires:	dbus-devel
+BuildRequires:	diffutils
 BuildRequires:	emacs
 BuildRequires:	fcgi-devel
 BuildRequires:	ffcall-devel
@@ -227,7 +228,7 @@ chmod 0755 %{buildroot}%{_libdir}/%{instdir}/full/lisp.run
 
 # Fix broken symlinks in the full set
 pushd %{buildroot}%{_libdir}/%{instdir}/full
-for obj in bogomips calls gettext readline regexi; do
+for obj in calls gettext readline regexi; do
   rm -f ${obj}.o
   ln -s ../base/${obj}.o ${obj}.o
 done
@@ -238,6 +239,10 @@ done
 for obj in fastcgi fastcgi_wrappers; do
   rm -f ${obj}.o
   ln -s ../fastcgi/${obj}.o ${obj}.o
+done
+for obj in cpari pari; do
+  rm -f ${obj}.o
+  ln -s ../pari/${obj}.o ${obj}.o
 done
 rm -f bdb.o
 ln -s ../berkeley-db/bdb.o bdb.o
@@ -409,6 +414,10 @@ ln -s ../../src/modules.c build/full/modules.c
 
 
 %changelog
+* Tue Mar 23 2021 Jerry James <loganjerry@gmail.com> - 2.49.93-18.d9cbf22git
+- Update to latest git snapshot for autoconf + glib updates
+- Fix broken symlinks in the full set
+
 * Mon Feb 08 2021 Pavel Raiskup <praiskup@redhat.com> - 2.49.93-17.a9aeb80git
 - rebuild for libpq ABI fix rhbz#1908268
 
