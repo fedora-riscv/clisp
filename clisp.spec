@@ -137,7 +137,6 @@ sed -i 's/9090/9096/g' tests/socket.tst
 # This package uses toplevel ASMs which are incompatible with LTO
 %define _lto_cflags %{nil}
 
-ulimit -s unlimited
 export LC_ALL=C.UTF-8
 
 # Do not need to specify base modules: i18n, readline, regexp, syscalls.
@@ -175,7 +174,6 @@ export LC_ALL=C.UTF-8
 	    LDFLAGS="-Wl,--as-needed -Wl,-z,relro -Wl,-z,noexecstack"
 
 %install
-ulimit -s unlimited
 make -C build DESTDIR=%{buildroot} install
 cp -a build/full %{buildroot}%{_libdir}/%{instdir}
 rm -f %{buildroot}%{_pkgdocdir}/doc/clisp.{dvi,1,ps}
