@@ -7,7 +7,7 @@
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
 Version:	2.49.93
-Release:	18.%{shortcommit}git%{?dist}
+Release:	19.%{shortcommit}git%{?dist}
 License:	GPLv2+
 URL:		http://www.clisp.org/
 # The source for this package was pulled from upstream's git repository.
@@ -414,6 +414,9 @@ ln -s ../../src/modules.c build/full/modules.c
 
 
 %changelog
+* Tue May 25 2021 Florian Weimer <fweimer@redhat.com> - 2.49.93-19.d9cbf22git
+- Rebuild with new binutils to fix ppc64le corruption (#1960730)
+
 * Tue Mar 23 2021 Jerry James <loganjerry@gmail.com> - 2.49.93-18.d9cbf22git
 - Update to latest git snapshot for autoconf + glib updates
 - Fix broken symlinks in the full set
