@@ -1,5 +1,8 @@
-%global commit d9cbf22d18680f9b9c84579be6bc363e4bd1090c
-%global shortcommit %(c=%{commit}; echo ${c:0:7})
+# Upstream has not made a new release since 2010
+%global srcname clisp
+%global commit  de01f0f47bb44d3a0f9e842464cf2520b238f356
+%global date    20210628
+%global forgeurl https://gitlab.com/gnu-clisp/clisp
 
 # There is a plus on the end for unreleased versions, not for released versions
 %global instdir %{name}-%{version}+
@@ -7,20 +10,24 @@
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
 Version:	2.49.93
-Release:	20.%{shortcommit}git%{?dist}
+
+%forgemeta
+
+Release:	21%{?dist}
 License:	GPLv2+
 URL:		http://www.clisp.org/
-# The source for this package was pulled from upstream's git repository.
-Source0:	https://gitlab.com/gnu-clisp/%{name}/repository/archive.tar.gz?ref=%{commit}#/%{name}-%{shortcommit}.tar.gz
+Source0:	%{forgesource}
+# Upstream dropped this file from the distribution
+Source1:	https://gitlab.com/sam-s/clhs/-/raw/master/clhs.el
 # Updated translations
-Source1:	http://translationproject.org/latest/clisp/sv.po
-Source2:	http://translationproject.org/latest/clisp/de.po
+Source2:	http://translationproject.org/latest/clisp/sv.po
+Source3:	http://translationproject.org/latest/clisp/de.po
 # https://sourceforge.net/p/clisp/patches/35/
 Patch0:		%{name}-db.patch
 # https://sourceforge.net/p/clisp/patches/32/
 Patch1:		%{name}-format.patch
-# The encrypt and setkey functions are no longer available from glibc
-Patch2:		%{name}-setkey.patch
+# Work around for a test that fails with permission denied
+Patch2:		%{name}-test.patch
 # Adapt to changes in pari 2.11.0
 Patch3:		%{name}-pari.patch
 # The combination of register and volatile is nonsensical
@@ -97,18 +104,10 @@ Files necessary for linking CLISP programs.
 
 
 %prep
-%autosetup -p0 -n %{name}-%{commit}-%{commit}
-
-# Change URLs not affected by the --hyperspec argument to configure
-sed -i.orig 's|lisp.org/HyperSpec/Body/chap-7.html|lispworks.com/documentation/HyperSpec/Body/07_.htm|' \
-    src/clos-package.lisp
-touch -r src/clos-package.lisp.orig src/clos-package.lisp
-rm -f src/clos-package.lisp.orig
-for f in src/_README.*; do
-  sed -i.orig 's|lisp.org/HyperSpec/FrontMatter|lispworks.com/documentation/HyperSpec/Front|' $f
-  touch -r ${f}.orig $f
-  rm -f ${f}.orig
-done
+%forgesetup
+%autopatch -p0
+cp -p %{SOURCE1} emacs
+cp -p %{SOURCE2} %{SOURCE3} src/po
 
 # We only link against libraries in system directories, so we need -L dir in
 # place of -Wl,-rpath -Wl,dir
@@ -118,6 +117,9 @@ sed -i -e 's/${wl}-rpath ${wl}/-L/g' src/build-aux/config.rpath
 # Fix modules that need access to symbols in libgnu.a
 sed -i 's/\(${GLLIB_A}\) \(${LIBS}\)/-Wl,--whole-archive \1 -Wl,--no-whole-archive \2 -ldl/' src/makemake.in
 
+# When building modules, put -Wl,--as-needed before the libraries to link
+sed -i "s/CC='\${CC}'/CC='\${CC} -Wl,--as-needed'/" src/makemake.in
+
 # Enable firefox to be the default browser for displaying documentation
 sed -i 's/;; \((setq \*browser\* .*)\)/\1/' src/cfgunix.lisp
 
@@ -125,9 +127,6 @@ sed -i 's/;; \((setq \*browser\* .*)\)/\1/' src/cfgunix.lisp
 tar -C modules/clx -xzf modules/clx/clx-manual.tar.gz
 chmod -R go+r modules/clx/clx-manual
 chmod a-x modules/clx/clx-manual/html/doc-index.cgi
-
-# Update the translations
-cp -p %{SOURCE1} %{SOURCE2} src/po
 
 # On some koji builders, something is already listening on port 9090, which
 # causes a spurious test failure.  Change to port 9096 for the test.
@@ -150,7 +149,6 @@ export LC_ALL=C.UTF-8
 	    --infodir=%{_infodir} \
 	    --docdir=%{_pkgdocdir} \
 	    --fsstnd=redhat \
-	    --hyperspec=http://www.lispworks.com/documentation/HyperSpec/ \
 	    --with-module=asdf \
 	    --with-module=berkeley-db \
 	    --with-module=bindings/glibc \
@@ -167,11 +165,17 @@ export LC_ALL=C.UTF-8
 	    --with-module=zlib \
 	    --with-libreadline-prefix=$PWD/readline \
 	    --with-ffcall \
-	    --cbcx \
+	    --config \
 	    build \
 	    CPPFLAGS="-I/usr/include/libsvm" \
 	    CFLAGS="%{optflags} -Wa,--noexecstack" \
 	    LDFLAGS="-Wl,--as-needed -Wl,-z,relro -Wl,-z,noexecstack"
+
+cd build
+# Workaround libtool reordering -Wl,--as-needed after all the libraries.
+sed -i 's|CC="\(.*g..\)"|CC="\1 -Wl,--as-needed"|' libtool
+make
+cd -
 
 %install
 make -C build DESTDIR=%{buildroot} install
@@ -192,13 +196,12 @@ pushd %{buildroot}%{_datadir}/emacs/site-lisp
 %{_emacs_bytecompile} *.el
 popd
 
-# Put back the original config.rpath, and fix executable bits
+# Put back the original config.rpath
 cp -p config.rpath.orig %{buildroot}%{_libdir}/%{instdir}/build-aux/config.rpath
-chmod a+x \
-  %{buildroot}%{_libdir}/%{instdir}/build-aux/config.guess \
-  %{buildroot}%{_libdir}/%{instdir}/build-aux/config.sub \
-  %{buildroot}%{_libdir}/%{instdir}/build-aux/depcomp \
-  %{buildroot}%{_libdir}/%{instdir}/build-aux/install-sh \
+
+# Fix a missing executable bit
+chmod a+x %{buildroot}%{_libdir}/%{instdir}/build-aux/depcomp
+
 # Fix paths in the Makefiles
 for mk in $(find %{buildroot}%{_libdir} -name Makefile); do
   sed -e "s,$PWD/modules,%{_libdir}/%{instdir}," \
@@ -219,10 +222,6 @@ done
 cp -p build/config.h %{buildroot}%{_libdir}/%{instdir}
 cp -p build/clx/new-clx/config.h \
    %{buildroot}%{_libdir}/%{instdir}/clx/new-clx
-
-# Fix permissions
-chmod 0755 %{buildroot}%{_bindir}/%{name}
-chmod 0755 %{buildroot}%{_libdir}/%{instdir}/full/lisp.run
 
 # Fix broken symlinks in the full set
 pushd %{buildroot}%{_libdir}/%{instdir}/full
@@ -269,6 +268,11 @@ popd
 # Help the debuginfo generator
 ln -s ../../src/modules.c build/base/modules.c
 ln -s ../../src/modules.c build/full/modules.c
+
+%check
+make -C build check
+make -C build extracheck
+make -C build base-mod-check
 
 %files -f %{name}.lang
 %license COPYRIGHT GNU-GPL
@@ -412,6 +416,12 @@ ln -s ../../src/modules.c build/full/modules.c
 
 
 %changelog
+* Fri Jul 16 2021 Jerry James <loganjerry@gmail.com> - 2.49.93-21.20210628gitde01f0f
+- Update to latest git snapshot for autoconf + glib updates
+- Drop upstreamed -setkey patch
+- Use forge macros
+- Use default HyperSpec URLs
+
 * Thu Jun 17 2021 Jerry James <loganjerry@gmail.com> - 2.49.93-20.d9cbf22git
 - Rebuild for ffcall 2.4 and multithreaded pari
 
