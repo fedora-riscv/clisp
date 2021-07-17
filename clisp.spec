@@ -26,12 +26,10 @@ Source3:	http://translationproject.org/latest/clisp/de.po
 Patch0:		%{name}-db.patch
 # https://sourceforge.net/p/clisp/patches/32/
 Patch1:		%{name}-format.patch
-# Work around for a test that fails with permission denied
-Patch2:		%{name}-test.patch
 # Adapt to changes in pari 2.11.0
-Patch3:		%{name}-pari.patch
+Patch2:		%{name}-pari.patch
 # The combination of register and volatile is nonsensical
-Patch4:		%{name}-register-volatile.patch
+Patch3:		%{name}-register-volatile.patch
 
 BuildRequires:	dbus-devel
 BuildRequires:	diffutils
