@@ -13,7 +13,7 @@ Version:	2.49.93
 
 %forgemeta
 
-Release:	21%{?dist}
+Release:	22%{?dist}
 License:	GPLv2+
 URL:		http://www.clisp.org/
 Source0:	%{forgesource}
@@ -414,6 +414,9 @@ make -C build base-mod-check
 
 
 %changelog
+* Wed Jul 21 2021 Fedora Release Engineering <releng@fedoraproject.org> - 2.49.93-22
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
+
 * Fri Jul 16 2021 Jerry James <loganjerry@gmail.com> - 2.49.93-21.20210628gitde01f0f
 - Update to latest git snapshot for autoconf + glib updates
 - Drop upstreamed -setkey patch
