@@ -13,7 +13,7 @@ Version:	2.49.93
 
 %forgemeta
 
-Release:	22%{?dist}
+Release:	23%{?dist}
 License:	GPLv2+
 URL:		http://www.clisp.org/
 Source0:	%{forgesource}
@@ -414,6 +414,9 @@ make -C build base-mod-check
 
 
 %changelog
+* Wed Jan 19 2022 Fedora Release Engineering <releng@fedoraproject.org> - 2.49.93-23
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
+
 * Wed Jul 21 2021 Fedora Release Engineering <releng@fedoraproject.org> - 2.49.93-22
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
 
