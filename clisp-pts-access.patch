@@ -1,0 +1,11 @@
+--- tests/streams.tst.orig	2021-06-28 14:32:42.000000000 -0600
++++ tests/streams.tst	2022-01-28 13:42:47.471080169 -0700
+@@ -1290,7 +1290,7 @@ T
+ (write-line "foo" s) "foo"
+ (let ((*reopen-open-file* nil)) ; stdout can be a file, it will be detected!
+   (with-open-file (copy s :direction :output) (streamp copy)))
+-#.(if (member (ext:operating-system-type) '("AIX" "Haiku" "HP-UX" "Minix" "Windows") :test #'equal) 'ERROR 'T)
++#.(if (member (ext:operating-system-type) '("AIX" "Haiku" "HP-UX" "Minix" "Windows" "Linux") :test #'equal) 'ERROR 'T)
+ 
+ #+clisp
+ (progn

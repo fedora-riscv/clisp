@@ -30,6 +30,8 @@ Patch1:		%{name}-format.patch
 Patch2:		%{name}-pari.patch
 # The combination of register and volatile is nonsensical
 Patch3:		%{name}-register-volatile.patch
+# Writing directly to /dev/pts/0 fails with a permission error
+Patch4:         %{name}-pts-access.patch
 
 BuildRequires:	dbus-devel
 BuildRequires:	diffutils
@@ -414,6 +416,9 @@ make -C build base-mod-check
 
 
 %changelog
+* Fri Jan 28 2022 Jerry James <loganjerry@gmail.com> - 2.49.93-23
+- Add -pts-access patch to fix FTBFS
+
 * Wed Jan 19 2022 Fedora Release Engineering <releng@fedoraproject.org> - 2.49.93-23
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
 
