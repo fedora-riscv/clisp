@@ -30,7 +30,10 @@ Patch1:		%{name}-format.patch
 Patch2:		%{name}-pari.patch
 # The combination of register and volatile is nonsensical
 Patch3:		%{name}-register-volatile.patch
-# Writing directly to /dev/pts/0 fails with a permission error
+# A test that writes to /dev/pts/0 succeeds or fails apparently at random.
+# I can only guess that /dev/pts/0 may or may not be what the test expects.
+# Perhaps we are racing with something else that allocates a pty.  Disable
+# the test for now.
 Patch4:         %{name}-pts-access.patch
 
 BuildRequires:	dbus-devel
