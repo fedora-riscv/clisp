@@ -1,0 +1,12 @@
+--- src/makemake.in.orig	2021-06-28 14:32:42.000000000 -0600
++++ src/makemake.in	2022-02-02 19:48:37.880723176 -0700
+@@ -3055,6 +3055,9 @@ for f in $CPARTS genclisph modules $EXTR
+     # "1252-171 The displacement must be greater than or equal to -32768 and less than or equal to 32767."
+     flags2=$flags2' -O1'
+   fi
++  if [ $f = foreign ] && [[ $HSYS =~ ppc64le ]] ; then
++    flags2=$flags2' -fno-inline-small-functions'
++  fi
+   echol "${f}.i : ${c}${dependsc}"
+   echotab "${XCPP} ${flags} ${c} > ${f}.i"
+   echol

@@ -7,6 +7,9 @@
 # There is a plus on the end for unreleased versions, not for released versions
 %global instdir %{name}-%{version}+
 
+# This package uses toplevel ASMs which are incompatible with LTO
+%global _lto_cflags %{nil}
+
 Name:		clisp
 Summary:	ANSI Common Lisp implementation
 Version:	2.49.93
@@ -35,6 +38,9 @@ Patch3:		%{name}-register-volatile.patch
 # Perhaps we are racing with something else that allocates a pty.  Disable
 # the test for now.
 Patch4:         %{name}-pts-access.patch
+# Work around a problem inlining a function on ppc64le
+# See https://bugzilla.redhat.com/show_bug.cgi?id=2049371
+Patch5:         %{name}-no-inline.patch
 
 BuildRequires:	dbus-devel
 BuildRequires:	diffutils
@@ -136,9 +142,6 @@ chmod a-x modules/clx/clx-manual/html/doc-index.cgi
 sed -i 's/9090/9096/g' tests/socket.tst
 
 %build
-# This package uses toplevel ASMs which are incompatible with LTO
-%define _lto_cflags %{nil}
-
 export LC_ALL=C.UTF-8
 
 # Do not need to specify base modules: i18n, readline, regexp, syscalls.
@@ -171,7 +174,7 @@ export LC_ALL=C.UTF-8
 	    --config \
 	    build \
 	    CPPFLAGS="-I/usr/include/libsvm" \
-	    CFLAGS="%{optflags} -Wa,--noexecstack" \
+	    CFLAGS="%{build_cflags} -Wa,--noexecstack" \
 	    LDFLAGS="-Wl,--as-needed -Wl,-z,relro -Wl,-z,noexecstack"
 
 cd build
@@ -273,6 +276,7 @@ ln -s ../../src/modules.c build/base/modules.c
 ln -s ../../src/modules.c build/full/modules.c
 
 %check
+export LC_ALL=C.UTF-8
 make -C build check
 make -C build extracheck
 make -C build base-mod-check
@@ -419,6 +423,9 @@ make -C build base-mod-check
 
 
 %changelog
+* Thu Feb  3 2022 Jerry James <loganjerry@gmail.com> - 2.49.93-23
+- Add -no-inline patch to workaround bz 2049371 (ppc64le segfault)
+
 * Fri Jan 28 2022 Jerry James <loganjerry@gmail.com> - 2.49.93-23
 - Add -pts-access patch to fix FTBFS
 
