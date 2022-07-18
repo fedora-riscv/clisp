@@ -114,7 +114,14 @@ Files necessary for linking CLISP programs.
 
 %prep
 %forgesetup
-%autopatch -p0
+%patch0 -p0
+%patch1 -p0
+%patch2 -p0
+%patch3 -p0
+%patch4 -p0
+%ifarch %{power64}
+%patch5 -p0
+%endif
 cp -p %{SOURCE1} emacs
 cp -p %{SOURCE2} %{SOURCE3} src/po
 
@@ -423,6 +430,9 @@ make -C build base-mod-check
 
 
 %changelog
+* Mon Jul 18 2022 Jerry James <loganjerry@gmail.com> - 2.49.93-23
+- Reduce the impact of the -no-inline patch
+
 * Thu Feb  3 2022 Jerry James <loganjerry@gmail.com> - 2.49.93-23
 - Add -no-inline patch to workaround bz 2049371 (ppc64le segfault)
 
