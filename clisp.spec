@@ -16,7 +16,7 @@ Version:	2.49.93
 
 %forgemeta
 
-Release:	23%{?dist}
+Release:	24%{?dist}
 License:	GPLv2+
 URL:		http://www.clisp.org/
 Source0:	%{forgesource}
@@ -430,6 +430,9 @@ make -C build base-mod-check
 
 
 %changelog
+* Wed Jul 20 2022 Fedora Release Engineering <releng@fedoraproject.org> - 2.49.93-24
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild
+
 * Mon Jul 18 2022 Jerry James <loganjerry@gmail.com> - 2.49.93-23
 - Reduce the impact of the -no-inline patch
 
