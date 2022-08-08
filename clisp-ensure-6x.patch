@@ -1,0 +1,11 @@
+--- modules/syscalls/calls.c.orig	2021-06-28 14:32:42.000000000 -0600
++++ modules/syscalls/calls.c	2022-08-04 13:21:10.461997402 -0600
+@@ -677,7 +677,7 @@ DEFUN(OS:VERSION>=, string1 string2){VAL
+       && name[name##_bytelen-6]=='X') {                 \
+     c_template = name;                                  \
+   } else {                                              \
+-    c_template = (char*)alloca(name##_bytelen+6);       \
++    c_template = (char*)alloca(name##_bytelen+7);       \
+     strcpy(c_template,name);                            \
+     strcat(c_template,"XXXXXX");                        \
+   }

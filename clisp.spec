@@ -16,7 +16,7 @@ Version:	2.49.93
 
 %forgemeta
 
-Release:	24%{?dist}
+Release:	25%{?dist}
 License:	GPLv2+
 URL:		http://www.clisp.org/
 Source0:	%{forgesource}
@@ -41,6 +41,10 @@ Patch4:         %{name}-pts-access.patch
 # Work around a problem inlining a function on ppc64le
 # See https://bugzilla.redhat.com/show_bug.cgi?id=2049371
 Patch5:         %{name}-no-inline.patch
+# The ENSURE_6X macro adds 6 'X' characters to a string.  However, it allocates
+# only 6 bytes more than the length of the string, which is not enough for the
+# null terminator.  See https://bugzilla.redhat.com/show_bug.cgi?id=2115476.
+Patch6:         %{name}-ensure-6x.patch
 
 BuildRequires:	dbus-devel
 BuildRequires:	diffutils
@@ -122,6 +126,7 @@ Files necessary for linking CLISP programs.
 %ifarch %{power64}
 %patch5 -p0
 %endif
+%patch6 -p0
 cp -p %{SOURCE1} emacs
 cp -p %{SOURCE2} %{SOURCE3} src/po
 
@@ -430,6 +435,9 @@ make -C build base-mod-check
 
 
 %changelog
+* Mon Aug  8 2022 Jerry James <loganjerry@gmail.com> - 2.49.93-25
+- Add -ensure-6x patch (rhbz#2115476)
+
 * Wed Jul 20 2022 Fedora Release Engineering <releng@fedoraproject.org> - 2.49.93-24
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild
 
