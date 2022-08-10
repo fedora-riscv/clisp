@@ -16,7 +16,7 @@ Version:	2.49.93
 
 %forgemeta
 
-Release:	25%{?dist}
+Release:	26%{?dist}
 License:	GPLv2+
 URL:		http://www.clisp.org/
 Source0:	%{forgesource}
@@ -306,12 +306,14 @@ make -C build base-mod-check
 %{_libdir}/%{instdir}/base/lisp.run
 %dir %{_libdir}/%{instdir}/berkeley-db/
 %{_libdir}/%{instdir}/berkeley-db/*.fas
+%{_libdir}/%{instdir}/berkeley-db/preload.lisp
 %dir %{_libdir}/%{instdir}/bindings/
 %dir %{_libdir}/%{instdir}/bindings/glibc/
 %{_libdir}/%{instdir}/bindings/glibc/*.fas
 %dir %{_libdir}/%{instdir}/clx/
 %dir %{_libdir}/%{instdir}/clx/new-clx/
 %{_libdir}/%{instdir}/clx/new-clx/*.fas
+%{_libdir}/%{instdir}/clx/new-clx/clx-preload.lisp
 %{_libdir}/%{instdir}/data/
 %dir %{_libdir}/%{instdir}/dbus/
 %{_libdir}/%{instdir}/dbus/*.fas
@@ -323,18 +325,24 @@ make -C build base-mod-check
 %{_libdir}/%{instdir}/full/lisp.run
 %dir %{_libdir}/%{instdir}/gdbm/
 %{_libdir}/%{instdir}/gdbm/*.fas
+%{_libdir}/%{instdir}/gdbm/preload.lisp
 %dir %{_libdir}/%{instdir}/gtk2/
 %{_libdir}/%{instdir}/gtk2/*.fas
+%{_libdir}/%{instdir}/gtk2/preload.lisp
 %dir %{_libdir}/%{instdir}/libsvm/
 %{_libdir}/%{instdir}/libsvm/*.fas
+%{_libdir}/%{instdir}/libsvm/preload.lisp
 %dir %{_libdir}/%{instdir}/pari/
 %{_libdir}/%{instdir}/pari/*.fas
+%{_libdir}/%{instdir}/pari/preload.lisp
 %dir %{_libdir}/%{instdir}/pcre/
 %{_libdir}/%{instdir}/pcre/*.fas
+%{_libdir}/%{instdir}/pcre/preload.lisp
 %dir %{_libdir}/%{instdir}/postgresql/
 %{_libdir}/%{instdir}/postgresql/*.fas
 %dir %{_libdir}/%{instdir}/rawsock/
 %{_libdir}/%{instdir}/rawsock/*.fas
+%{_libdir}/%{instdir}/rawsock/preload.lisp
 %dir %{_libdir}/%{instdir}/zlib/
 %{_libdir}/%{instdir}/zlib/*.fas
 %{_datadir}/emacs/site-lisp/*
@@ -353,7 +361,7 @@ make -C build base-mod-check
 %{_libdir}/%{instdir}/base/makevars
 %{_libdir}/%{instdir}/berkeley-db/Makefile
 %{_libdir}/%{instdir}/berkeley-db/*.h
-%{_libdir}/%{instdir}/berkeley-db/*.lisp
+%{_libdir}/%{instdir}/berkeley-db/dbi.lisp
 %{_libdir}/%{instdir}/berkeley-db/*.o
 %{_libdir}/%{instdir}/berkeley-db/*.sh
 %{_libdir}/%{instdir}/bindings/glibc/Makefile
@@ -365,7 +373,9 @@ make -C build base-mod-check
 %{_libdir}/%{instdir}/clx/new-clx/README
 %{_libdir}/%{instdir}/clx/new-clx/Makefile
 %{_libdir}/%{instdir}/clx/new-clx/*.h
-%{_libdir}/%{instdir}/clx/new-clx/*.lisp
+%{_libdir}/%{instdir}/clx/new-clx/clx.lisp
+%{_libdir}/%{instdir}/clx/new-clx/image.lisp
+%{_libdir}/%{instdir}/clx/new-clx/resource.lisp
 %{_libdir}/%{instdir}/clx/new-clx/*.o
 %{_libdir}/%{instdir}/clx/new-clx/*.sh
 %{_libdir}/%{instdir}/config.h
@@ -386,32 +396,33 @@ make -C build base-mod-check
 %{_libdir}/%{instdir}/full/makevars
 %{_libdir}/%{instdir}/gdbm/Makefile
 %{_libdir}/%{instdir}/gdbm/*.h
-%{_libdir}/%{instdir}/gdbm/*.lisp
+%{_libdir}/%{instdir}/gdbm/gdbm.lisp
 %{_libdir}/%{instdir}/gdbm/*.o
 %{_libdir}/%{instdir}/gdbm/*.sh
 %{_libdir}/%{instdir}/gtk2/Makefile
 %{_libdir}/%{instdir}/gtk2/*.cfg
 %{_libdir}/%{instdir}/gtk2/*.glade
 %{_libdir}/%{instdir}/gtk2/*.h
-%{_libdir}/%{instdir}/gtk2/*.lisp
+%{_libdir}/%{instdir}/gtk2/gtk.lisp
 %{_libdir}/%{instdir}/gtk2/*.o
 %{_libdir}/%{instdir}/gtk2/*.sh
 %{_libdir}/%{instdir}/libsvm/README
 %{_libdir}/%{instdir}/libsvm/Makefile
 %{_libdir}/%{instdir}/libsvm/*.h
-%{_libdir}/%{instdir}/libsvm/*.lisp
+%{_libdir}/%{instdir}/libsvm/libsvm.lisp
 %{_libdir}/%{instdir}/libsvm/*.o
 %{_libdir}/%{instdir}/libsvm/*.sh
 %{_libdir}/%{instdir}/linkkit/
 %{_libdir}/%{instdir}/pari/README
 %{_libdir}/%{instdir}/pari/Makefile
 %{_libdir}/%{instdir}/pari/*.h
-%{_libdir}/%{instdir}/pari/*.lisp
+%{_libdir}/%{instdir}/pari/desc2lisp.lisp
+%{_libdir}/%{instdir}/pari/pari.lisp
 %{_libdir}/%{instdir}/pari/*.o
 %{_libdir}/%{instdir}/pari/*.sh
 %{_libdir}/%{instdir}/pcre/Makefile
 %{_libdir}/%{instdir}/pcre/*.h
-%{_libdir}/%{instdir}/pcre/*.lisp
+%{_libdir}/%{instdir}/pcre/pcre.lisp
 %{_libdir}/%{instdir}/pcre/*.o
 %{_libdir}/%{instdir}/pcre/*.sh
 %{_libdir}/%{instdir}/postgresql/README
@@ -423,7 +434,7 @@ make -C build base-mod-check
 %{_libdir}/%{instdir}/rawsock/demos/
 %{_libdir}/%{instdir}/rawsock/Makefile
 %{_libdir}/%{instdir}/rawsock/*.h
-%{_libdir}/%{instdir}/rawsock/*.lisp
+%{_libdir}/%{instdir}/rawsock/sock.lisp
 %{_libdir}/%{instdir}/rawsock/*.o
 %{_libdir}/%{instdir}/rawsock/*.sh
 %{_libdir}/%{instdir}/zlib/Makefile
@@ -435,6 +446,9 @@ make -C build base-mod-check
 
 
 %changelog
+* Wed Aug 10 2022 Jerry James <loganjerry@gmail.com> - 2.49.93-26
+- Move preload.lisp files to the main package
+
 * Mon Aug  8 2022 Jerry James <loganjerry@gmail.com> - 2.49.93-25
 - Add -ensure-6x patch (rhbz#2115476)
 
