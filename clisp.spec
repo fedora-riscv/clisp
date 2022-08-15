@@ -16,8 +16,13 @@ Version:	2.49.93
 
 %forgemeta
 
+# The project as a whole is GPL-2.0-or-later.  Exceptions:
+# - Some documentation is dual-licensed as GPL-2.0-or-later OR GFDL-1.2-or-later
+# - src/gllib is LGPL-2.1-or-later
+# - src/socket.d and modules/clx/mit-clx/doc.lisp are HPND
+# - src/xthread.d and modules/asdf/asdf.lisp are X11
+License:	GPL-2.0-or-later AND (GPL-2.0-or-later OR GFDL-1.2-or-later) AND LGPL-2.1-or-later AND HPND AND X11
 Release:	26%{?dist}
-License:	GPLv2+
 URL:		http://www.clisp.org/
 Source0:	%{forgesource}
 # Upstream dropped this file from the distribution
@@ -446,6 +451,9 @@ make -C build base-mod-check
 
 
 %changelog
+* Mon Aug 15 2022 Jerry James <loganjerry@gmail.com> - 2.49.93-26
+- Convert License tag to SPDX
+
 * Wed Aug 10 2022 Jerry James <loganjerry@gmail.com> - 2.49.93-26
 - Move preload.lisp files to the main package
 
